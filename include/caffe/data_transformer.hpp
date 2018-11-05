@@ -63,7 +63,7 @@ class DataTransformer {
    *    set_cpu_data() is used. See memory_layer.cpp for an example.
    */
   void Transform(const vector<cv::Mat> & mat_vector,
-                Blob<Dtype>* transformed_blob, bool transpose = true);
+                Blob<Dtype>* transformed_blob, bool transpose = false);
 
   /**
    * @brief Applies the transformation defined in the data layer's
