@@ -23,7 +23,7 @@ namespace caffe {
       //LOG(FATAL) << "Reshaping happens during the call to forward.";
     }
 
-    virtual inline const char* type() const { return "ProposalLayer"; }
+    virtual inline const char* type() const { return "Proposal"; }
 
   protected:
     virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
