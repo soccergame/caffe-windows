@@ -21,6 +21,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <UseIntelMKL>Sequential</UseIntelMKL>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -463,6 +464,9 @@
     <CudaCompile Include="..\..\src\caffe\layers\truncation_layer.cu" />
     <CudaCompile Include="..\..\src\caffe\util\nms.cu" />
     <CudaCompile Include="..\..\src\caffe\util\util_img.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\caffe\proto\caffe.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(SolutionDir)\CommonSettings.targets" />
