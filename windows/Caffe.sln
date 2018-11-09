@@ -71,7 +71,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "caffe.binding", "caffe.bind
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "python", "python.pyproj", "{01F97FA0-408C-4FB5-892F-E66ACD59D079}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "general_and_extract_models", "..\general_and_extract_models\general_and_extract_models.vcxproj", "{36BE7A30-B791-44E1-A9C0-C8320DDBF176}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "general_and_extract_models", "general_and_extract_models\general_and_extract_models.vcxproj", "{503B0EF8-D53A-4785-B60F-91754E007C9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -217,16 +217,14 @@ Global
 		{01F97FA0-408C-4FB5-892F-E66ACD59D079}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01F97FA0-408C-4FB5-892F-E66ACD59D079}.Release|x64.ActiveCfg = Release|Any CPU
 		{01F97FA0-408C-4FB5-892F-E66ACD59D079}.Release|x86.ActiveCfg = Release|Any CPU
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Debug|x64.ActiveCfg = Debug|x64
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Debug|x64.Build.0 = Debug|x64
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Debug|x86.ActiveCfg = Debug|Win32
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Debug|x86.Build.0 = Debug|Win32
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Release|Any CPU.ActiveCfg = Release|Win32
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Release|x64.ActiveCfg = Release|x64
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Release|x64.Build.0 = Release|x64
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Release|x86.ActiveCfg = Release|Win32
-		{36BE7A30-B791-44E1-A9C0-C8320DDBF176}.Release|x86.Build.0 = Release|Win32
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Debug|x64.ActiveCfg = Debug|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Debug|x64.Build.0 = Debug|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Debug|x86.ActiveCfg = Debug|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Release|Any CPU.ActiveCfg = Release|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Release|x64.ActiveCfg = Release|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Release|x64.Build.0 = Release|x64
+		{503B0EF8-D53A-4785-B60F-91754E007C9A}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

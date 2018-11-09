@@ -378,7 +378,7 @@ message LayerParameter {
   optional DropoutParameter dropout_param = 108;
   optional DummyDataParameter dummy_data_param = 109;
   optional EltwiseParameter eltwise_param = 110;
-  optional ELUParameter elu_param = 140;
+  optional ELUParameter elu_param = 200;
   optional EmbedParameter embed_param = 137;
   optional ExpParameter exp_param = 111;
   optional FlattenParameter flatten_param = 135;
@@ -411,7 +411,7 @@ message LayerParameter {
   optional ThresholdParameter threshold_param = 128;
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
-  optional BNParameter bn_param = 200;
+  optional BNParameter bn_param = 140;
   optional LocalParameter local_param = 201;
   optional InsanityParameter insanity_param = 202;
   optional TripletLossParameter triplet_loss_param = 203;
@@ -778,6 +778,7 @@ message EltwiseParameter {
     SUM = 1;
     MAX = 2;
     SORT = 3;
+	SIMPLESUM = 4;
   }
   optional EltwiseOp operation = 1 [default = SUM]; // element-wise operation
   repeated float coeff = 2; // blob-wise coefficient for SUM operation
@@ -1441,7 +1442,6 @@ message V1LayerParameter {
     TRIPLET_LOSS = 45;
     ROIPOOLING = 46;
     BATCH_NORM = 47;
-    ELTWISE_AFFINE = 48;
   }
   optional LayerType type = 5;
   repeated BlobProto blobs = 6;

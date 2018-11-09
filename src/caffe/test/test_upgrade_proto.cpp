@@ -2896,7 +2896,10 @@ namespace caffe {
         shared_ptr<Layer<float> > layer;
         for (int i = 0; i < V1LayerParameter_LayerType_LayerType_ARRAYSIZE; ++i) {
             if (i == 40)
+            {
                 ASSERT_FALSE(V1LayerParameter_LayerType_IsValid(i));
+                continue;
+            } 
             else
                 ASSERT_TRUE(V1LayerParameter_LayerType_IsValid(i));
             V1LayerParameter_LayerType v1_type = V1LayerParameter_LayerType(i);

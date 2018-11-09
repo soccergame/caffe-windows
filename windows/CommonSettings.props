@@ -18,7 +18,7 @@
          set to the root of your Matlab installation. -->
     <MatlabSupport>false</MatlabSupport>
     <MXNetSupport>false</MXNetSupport>
-    <CudaDependencies>cufft.lib</CudaDependencies>
+    <CudaDependencies></CudaDependencies>
     <BoostIncludeFolder>$(SolutionDir)thirdparty\Boost</BoostIncludeFolder>
     <BoostLibraryFolder>$(SolutionDir)thirdparty\Boost\lib64-msvc-14.0</BoostLibraryFolder>
     <HDF5Root>$(SolutionDir)thirdparty\HDF5</HDF5Root>
@@ -43,7 +43,7 @@
     <ScriptsDir>$(SolutionDir)\scripts</ScriptsDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(CpuOnlyBuild)'=='false'">
-    <CudaDependencies>cublas.lib;cuda.lib;curand.lib;cudart.lib</CudaDependencies>
+    <CudaDependencies>cufft.lib;cublas.lib;cuda.lib;curand.lib;cudart.lib</CudaDependencies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(UseCuDNN)'=='true'">
