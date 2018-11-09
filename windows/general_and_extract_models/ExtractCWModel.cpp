@@ -4,7 +4,8 @@
 #include <stack>
 #include "caffe/caffe.hpp"
 #include "autoarray.h"
-#include "tclap\CmdLine.h"
+#include "tclap/CmdLine.h"
+#include "opencv2/opencv.hpp"
 
 namespace brc_sn
 {
@@ -54,9 +55,10 @@ int main(int argc, char *argv[])
 
         std::string strNetPath = "D:/project/caffe-windows/Build/x64/Debug/age.bin";
         std::string strWeightPath = "D:/project/caffe-windows/Build/x64/Debug/ageWeight.bin";
-        std::string szNetFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_net.prototxt";
-        std::string szWeightFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_net.caffemodel";
+        std::string szNetFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_age_gender_net.prototxt";
+        std::string szWeightFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_age_gender_net.caffemodel";
         
+        std::string image_path = "E:/工作资料/[2]图像部门/[4]图像数据/[1]人脸数据/ID_T_norm/sample_dy/sn04030481_norm1.jpg";
   //      AutoArray<char> encryptedData;
   //      int widthByte = 0;
   //      std::fstream fp;
@@ -89,7 +91,9 @@ int main(int argc, char *argv[])
 	 //const int protoTxtLen = pBuffer[0];
 	 //const int modelSize = pBuffer[1];
 	 //const unsigned char *pDataBuf = encryptedData + sizeof(int) * 2;
-        if (false) {
+        bool need_extracted = false;
+        bool need_debug = false;
+        if (need_extracted) {
             // 初始化网络结构
             caffe::Caffe::set_mode(caffe::Caffe::CPU);
             // 定义网络参数
@@ -112,29 +116,69 @@ int main(int argc, char *argv[])
             caffe::WriteProtoToBinaryFile(net_param, szWeightFile);
         }
         else {
+            cv::Mat ori_image = cv::imread(image_path, CV_LOAD_IMAGE_GRAYSCALE);
+
             caffe::Caffe::set_mode(caffe::Caffe::CPU);
             caffe::NetParameter param;
             caffe::ReadProtoFromTextFileOrDie(szNetFile.c_str(), &param);
-            std::cout << param.DebugString() << std::endl;
-            caffe::NetParameter net_param;
-            caffe::ReadProtoFromBinaryFileOrDie(strWeightPath.c_str(), &net_param);
-            int num_net_layers = param.layer_size();
-            int num_weight_layers = net_param.layer_size();
+            if (need_debug) {
+                std::cout << param.DebugString() << std::endl;
+                caffe::NetParameter net_param;
+                caffe::ReadProtoFromBinaryFileOrDie(strWeightPath.c_str(), &net_param);
 
-            std::cout << "net: " << num_net_layers << "; weight: " << num_weight_layers << std::endl;
+                int num_net_layers = param.layer_size();
+                int num_weight_layers = net_param.layer_size();
 
-            for (int j = 0; j < num_weight_layers; ++j) {
-                const caffe::LayerParameter& source_layer = net_param.layer(j);
-                std::cout << "layer type: " << source_layer.type() << std::endl;
-                if (source_layer.type() == "Eltwise")
-                {
-                    std::cout << source_layer.DebugString() << std::endl;
+                std::cout << "net: " << num_net_layers << "; weight: " << num_weight_layers << std::endl;
+
+                for (int j = 0; j < num_weight_layers; ++j) {
+                    const caffe::LayerParameter& source_layer = net_param.layer(j);
+                    std::cout << "layer type: " << source_layer.type() << std::endl;
+                    if (source_layer.type() == "Eltwise")
+                    {
+                        std::cout << source_layer.DebugString() << std::endl;
+                    }
                 }
             }
-
             param.mutable_state()->set_phase(caffe::TEST);
             caffe::Net<float> *pCaffeNet = new caffe::Net<float>(param);
             pCaffeNet->CopyTrainedLayersFromBinaryProto(szWeightFile.c_str());
+
+            int length = ori_image.channels() * ori_image.rows * ori_image.cols;
+            AutoArray<float> normRealImage(length);
+            if (ori_image.channels() == 1)
+            {
+                for (int i = 0; i < length; ++i)
+                    normRealImage[i] = static_cast<float>(ori_image.at<unsigned char>(i)) - 127.5f;
+            }
+
+            std::vector<caffe::Blob<float>*> bottom_vec;
+            bottom_vec.push_back(new caffe::Blob<float>);
+            bottom_vec[0]->Reshape(1, ori_image.channels(), ori_image.rows, ori_image.cols);
+            bottom_vec[0]->set_cpu_data(normRealImage);
+
+            float iter_loss;
+            const vector<caffe::Blob<float>*>& result = pCaffeNet->Forward(bottom_vec, &iter_loss);
+
+            int fea_len = result[0]->count();
+            AutoArray<float> feature(fea_len);
+            float max_score = -1.0f;
+            float age = 0;
+            for (int i = 0; i < fea_len-2; ++i)
+            {
+                feature[i] = result[0]->cpu_data()[i];
+                if (max_score <= feature[i]) {
+                    max_score = feature[i];
+                    age = float(i + 1);
+                }
+            }
+            feature[fea_len - 2] = result[0]->cpu_data()[fea_len - 2];
+            feature[fea_len - 1] = result[0]->cpu_data()[fea_len - 1];
+            if (feature[fea_len - 2] <= feature[fea_len - 1])
+                printf("男人，年龄%0.1f岁\n", age);
+            else
+                printf("女人，年龄%0.1f岁\n", age);
+            
         }
         
         

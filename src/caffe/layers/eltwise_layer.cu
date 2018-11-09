@@ -36,6 +36,7 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   int* mask = NULL;
   const int count = top[0]->count();
   Dtype* top_data = top[0]->mutable_gpu_data();
+  const Dtype* mutable_coeff = NULL;
   switch (op_) {
   case EltwiseParameter_EltwiseOp_PROD:
     caffe_gpu_mul(count, bottom[0]->gpu_data(), bottom[1]->gpu_data(),
@@ -45,6 +46,14 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
     break;
   case EltwiseParameter_EltwiseOp_SUM:
+    mutable_coeff = this->blobs_[0]->gpu_data();
+    caffe_gpu_set(count, Dtype(0.), top_data);
+    // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
+    for (int i = 0; i < bottom.size(); ++i) {
+      caffe_gpu_axpy(count, mutable_coeff[i], bottom[i]->gpu_data(), top_data);
+    }
+    break;
+  case EltwiseParameter_EltwiseOp_SIMPLESUM:
     caffe_gpu_set(count, Dtype(0.), top_data);
     // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
     for (int i = 0; i < bottom.size(); ++i) {
@@ -92,6 +101,8 @@ template <typename Dtype>
 void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
   const int* mask = NULL;
+  Dtype* mutable_coeff_diff = NULL;
+  const Dtype* mutable_coeff_data = NULL;
   const int count = top[0]->count();
   const Dtype* top_data = top[0]->gpu_data();
   const Dtype* top_diff = top[0]->gpu_diff();
@@ -118,7 +129,14 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         }
         caffe_gpu_mul(count, bottom_diff, top_diff, bottom_diff);
         break;
-      case EltwiseParameter_EltwiseOp_SUM:
+	  case EltwiseParameter_EltwiseOp_SUM:
+	    mutable_coeff_diff = this->blobs_[0]->mutable_gpu_diff();
+	    mutable_coeff = this->blobs_[0]->gpu_data();
+        caffe_gpu_scale(count, mutable_coeff[i], top_diff, bottom_diff);
+		caffe_gpu_dot(count, top_diff, bottom_data, &mutable_coeff_diff[i]);
+		mutable_coeff_diff[i] /= Dtype(bottom[0]->num());   
+        break;
+      case EltwiseParameter_EltwiseOp_SIMPLESUM:
         if (coeffs_[i] == Dtype(1.)) {
           caffe_copy(count, top_diff, bottom_diff);
         } else {

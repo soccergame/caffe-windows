@@ -103,6 +103,49 @@ namespace caffe {
         }
     }
 
+    TYPED_TEST(EltwiseLayerTest, TestSum) {
+        typedef typename TypeParam::Dtype Dtype;
+        LayerParameter layer_param;
+        EltwiseParameter* eltwise_param = layer_param.mutable_eltwise_param();
+        eltwise_param->set_operation(EltwiseParameter_EltwiseOp_SUM);
+        shared_ptr<EltwiseLayer<Dtype> > layer(
+            new EltwiseLayer<Dtype>(layer_param));
+        layer->SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+        layer->Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+        const Dtype* data = this->blob_top_->cpu_data();
+        const int count = this->blob_top_->count();
+        const Dtype* in_data_a = this->blob_bottom_a_->cpu_data();
+        const Dtype* in_data_b = this->blob_bottom_b_->cpu_data();
+        const Dtype* in_data_c = this->blob_bottom_c_->cpu_data();
+        for (int i = 0; i < count; ++i) {
+            EXPECT_NEAR(data[i], in_data_a[i] + in_data_b[i] + in_data_c[i], 1e-4);
+        }
+    }
+
+    TYPED_TEST(EltwiseLayerTest, TestSumWeighted) {
+        typedef typename TypeParam::Dtype Dtype;
+        LayerParameter layer_param;
+        EltwiseParameter* eltwise_param = layer_param.mutable_eltwise_param();
+        eltwise_param->set_operation(EltwiseParameter_EltwiseOp_SUM);
+        shared_ptr<EltwiseLayer<Dtype> > layer(
+            new EltwiseLayer<Dtype>(layer_param));
+        layer->SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+        vector<shared_ptr<Blob<Dtype> > >& blobs = layer->blobs();
+        blobs[0]->mutable_cpu_data()[0] = 1;
+        blobs[0]->mutable_cpu_data()[1] = -0.5;
+        blobs[0]->mutable_cpu_data()[2] = 2;
+        layer->Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+        const Dtype* data = this->blob_top_->cpu_data();
+        const int count = this->blob_top_->count();
+        const Dtype* in_data_a = this->blob_bottom_a_->cpu_data();
+        const Dtype* in_data_b = this->blob_bottom_b_->cpu_data();
+        const Dtype* in_data_c = this->blob_bottom_c_->cpu_data();
+        for (int i = 0; i < count; ++i) {
+            EXPECT_NEAR(data[i], in_data_a[i] - 0.5*in_data_b[i] + 2 * in_data_c[i],
+                1e-4);
+        }
+    }
+
     TYPED_TEST(EltwiseLayerTest, TestSimpleSumCoeff) {
         typedef typename TypeParam::Dtype Dtype;
         LayerParameter layer_param;
