@@ -46,14 +46,6 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
     break;
   case EltwiseParameter_EltwiseOp_SUM:
-    mutable_coeff = this->blobs_[0]->gpu_data();
-    caffe_gpu_set(count, Dtype(0.), top_data);
-    // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
-    for (int i = 0; i < bottom.size(); ++i) {
-      caffe_gpu_axpy(count, mutable_coeff[i], bottom[i]->gpu_data(), top_data);
-    }
-    break;
-  case EltwiseParameter_EltwiseOp_SIMPLESUM:
     caffe_gpu_set(count, Dtype(0.), top_data);
     // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
     for (int i = 0; i < bottom.size(); ++i) {
@@ -79,6 +71,14 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       caffe_gpu_mul(count, top_data, sort_temp_.gpu_data(), top_data);
     }
     caffe_gpu_add_scalar(count, Dtype(-1), top_data);
+    break;
+  case EltwiseParameter_EltwiseOp_WEIGHTEDSUM:
+    mutable_coeff = this->blobs_[0]->gpu_data();
+    caffe_gpu_set(count, Dtype(0.), top_data);
+    // TODO(shelhamer) does cuBLAS optimize to sum for coeff = 1?
+    for (int i = 0; i < bottom.size(); ++i) {
+      caffe_gpu_axpy(count, mutable_coeff[i], bottom[i]->gpu_data(), top_data);
+    }
     break;
   default:
     LOG(FATAL) << "Unknown elementwise operation.";
@@ -129,14 +129,7 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         }
         caffe_gpu_mul(count, bottom_diff, top_diff, bottom_diff);
         break;
-	  case EltwiseParameter_EltwiseOp_SUM:
-	    mutable_coeff_diff = this->blobs_[0]->mutable_gpu_diff();
-	    mutable_coeff = this->blobs_[0]->gpu_data();
-        caffe_gpu_scale(count, mutable_coeff[i], top_diff, bottom_diff);
-		caffe_gpu_dot(count, top_diff, bottom_data, &mutable_coeff_diff[i]);
-		mutable_coeff_diff[i] /= Dtype(bottom[0]->num());   
-        break;
-      case EltwiseParameter_EltwiseOp_SIMPLESUM:
+      case EltwiseParameter_EltwiseOp_SUM:
         if (coeffs_[i] == Dtype(1.)) {
           caffe_copy(count, top_diff, bottom_diff);
         } else {
@@ -174,6 +167,13 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           NOT_IMPLEMENTED;
         }
         caffe_gpu_mul(count, bottom_diff, top_diff, bottom_diff);
+        break;
+	  case EltwiseParameter_EltwiseOp_WEIGHTEDSUM:
+	    mutable_coeff_diff = this->blobs_[0]->mutable_gpu_diff();
+	    mutable_coeff = this->blobs_[0]->gpu_data();
+        caffe_gpu_scale(count, mutable_coeff[i], top_diff, bottom_diff);
+		caffe_gpu_dot(count, top_diff, bottom_data, &mutable_coeff_diff[i]);
+		mutable_coeff_diff[i] /= Dtype(bottom[0]->num());   
         break;
       default:
         LOG(FATAL) << "Unknown elementwise operation.";

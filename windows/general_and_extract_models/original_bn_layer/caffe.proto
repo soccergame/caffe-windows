@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 149 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 147 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -412,9 +412,6 @@ message LayerParameter {
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
   optional BNParameter bn_param = 140;
-  optional OrdinalRegressionParameter ordinal_regression_loss_param = 147;
-  optional MAEParameter mae_param = 148;
-  optional ShuffleChannelParameter shuffle_channel_param = 164;
   optional LocalParameter local_param = 201;
   optional InsanityParameter insanity_param = 202;
   optional TripletLossParameter triplet_loss_param = 203;
@@ -446,6 +443,7 @@ message LayerParameter {
   optional LargeMarginInnerProductParameter largemargin_inner_product_param = 227;
   optional LabelSpecificRescaleParameter label_specific_rescale_param = 228;
   optional InfimumLossParamter infimum_loss_param = 229;
+  optional OrdinalRegressionParameter ordinal_regression_loss_param = 230;
   optional ResizeParameter resize_param = 231;
   optional MarginInnerProductParameter margin_inner_product_param = 232;
   optional FeatureDecayLossParameter feature_decay_loss_param = 233;
@@ -780,7 +778,7 @@ message EltwiseParameter {
     SUM = 1;
     MAX = 2;
     SORT = 3;
-	WEIGHTEDSUM = 4;
+	SIMPLESUM = 4;
   }
   optional EltwiseOp operation = 1 [default = SUM]; // element-wise operation
   repeated float coeff = 2; // blob-wise coefficient for SUM operation
@@ -1233,23 +1231,6 @@ message ScaleParameter {
   optional FillerParameter bias_filler = 5;
   optional float min_value = 6;
   optional float max_value = 7;
-}
-
-message ShuffleChannelParameter {
-  optional uint32 group = 1[default = 1]; // The number of group
-}
-
-message OrdinalRegressionParameter {
-  optional uint32 k = 1;
-  optional string weight_file = 2;
-}
-
-message MAEParameter {
-  optional int32 axis = 2 [default = 1];
-
-  // If specified, ignore instances with the given label.
-  optional int32 ignore_label = 3;
- 
 }
 
 message SigmoidParameter {
@@ -1890,6 +1871,11 @@ message LabelSpecificRescaleParameter {
 
 message InfimumLossParamter {
   optional float infimum = 1 [default = 0.25];
+}
+
+message OrdinalRegressionParameter {
+  optional uint32 k = 1;
+  optional string weight_file = 2;
 }
 
 // Message that stores parameters used by ResizeLayer

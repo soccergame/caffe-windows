@@ -19,6 +19,10 @@ void ReadNetParamsFromTextFileOrDie(const string& param_file,
 void ReadNetParamsFromBinaryFileOrDie(const string& param_file,
                                       NetParameter* param);
 
+// Read parameters from memory buffer into a NetParameter proto message  [11/12/2018 hzx]
+int ReatNetParamsFromBuffer(const unsigned char *pBuffer, 
+    int bufSize, NetParameter* param);
+
 // Return true iff any layer contains parameters specified using
 // deprecated V0LayerParameter.
 bool NetNeedsV0ToV1Upgrade(const NetParameter& net_param);

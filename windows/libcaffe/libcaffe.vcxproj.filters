@@ -435,9 +435,6 @@
     <ClCompile Include="..\..\src\caffe\layers\largemargin_inner_product_layer.cpp">
       <Filter>src\layers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\caffe\layers\cudnn_bn_layer.cpp">
-      <Filter>src\layers</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\caffe\layers\bn_layer.cpp">
       <Filter>src\layers</Filter>
     </ClCompile>
@@ -475,6 +472,21 @@
       <Filter>src\layers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\caffe\layers\global_lse_margin_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\cudnn_bn_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\shuffle_channel_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\conv_dw_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\mae_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\layers\ordinal_regression_loss_layer.cpp">
       <Filter>src\layers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -564,9 +576,6 @@
       <Filter>include\layers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\crop_layer.hpp">
-      <Filter>include\layers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\caffe\layers\cudnn_conv_layer.hpp">
       <Filter>include\layers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\cudnn_lcn_layer.hpp">
@@ -818,9 +827,6 @@
     <ClInclude Include="..\..\include\caffe\layers\largemargin_inner_product_layer.hpp">
       <Filter>include\layers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\caffe\layers\cudnn_bn_layer.hpp">
-      <Filter>include\layers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\bn_layer.hpp">
       <Filter>include\layers</Filter>
     </ClInclude>
@@ -861,6 +867,18 @@
       <Filter>include\layers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\caffe\layers\global_lse_margin_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\shuffle_channel_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\conv_dw_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\mae_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\caffe\layers\ordinal_regression_loss_layer.hpp">
       <Filter>include\layers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -946,12 +964,6 @@
     <CudaCompile Include="..\..\src\caffe\layers\largemargin_inner_product_layer.cu">
       <Filter>cu\layers</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\..\src\caffe\layers\cudnn_bn_layer.cu">
-      <Filter>cu\layers</Filter>
-    </CudaCompile>
-    <CudaCompile Include="..\..\src\caffe\layers\bn_layer.cu">
-      <Filter>cu\layers</Filter>
-    </CudaCompile>
     <CudaCompile Include="..\..\src\caffe\layers\resize_layer.cu">
       <Filter>cu\layers</Filter>
     </CudaCompile>
@@ -1003,9 +1015,6 @@
       <Filter>cu\layers</Filter>
     </None>
     <None Include="..\..\src\caffe\layers\bias_layer.cu">
-      <Filter>cu\layers</Filter>
-    </None>
-    <None Include="..\..\src\caffe\layers\bnll_layer.cu">
       <Filter>cu\layers</Filter>
     </None>
     <None Include="..\..\src\caffe\layers\concat_layer.cu">
@@ -1138,6 +1147,21 @@
       <Filter>cu\layers</Filter>
     </None>
     <None Include="..\..\src\caffe\layers\tile_layer.cu">
+      <Filter>cu\layers</Filter>
+    </None>
+    <None Include="..\..\src\caffe\layers\bn_layer.cu">
+      <Filter>cu\layers</Filter>
+    </None>
+    <None Include="..\..\src\caffe\layers\cudnn_bn_layer.cu">
+      <Filter>cu\layers</Filter>
+    </None>
+    <None Include="..\..\src\caffe\layers\shuffle_channel_layer.cu">
+      <Filter>cu\layers</Filter>
+    </None>
+    <None Include="..\..\src\caffe\layers\conv_dw_layer.cu">
+      <Filter>cu\layers</Filter>
+    </None>
+    <None Include="..\..\src\caffe\layers\ordinal_regression_loss_layer.cu">
       <Filter>cu\layers</Filter>
     </None>
   </ItemGroup>

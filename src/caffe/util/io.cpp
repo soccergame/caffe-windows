@@ -32,6 +32,7 @@ using google::protobuf::io::FileInputStream;
 using google::protobuf::io::FileOutputStream;
 using google::protobuf::io::ZeroCopyInputStream;
 using google::protobuf::io::CodedInputStream;
+using google::protobuf::io::ArrayInputStream;
 using google::protobuf::io::ZeroCopyOutputStream;
 using google::protobuf::io::CodedOutputStream;
 using google::protobuf::Message;
@@ -71,6 +72,28 @@ bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
   delete raw_input;
   close(fd);
   return success;
+}
+
+bool ReadProtoFromBuffer(const unsigned char* pBuffer, int bufSize, Message* proto) {
+    ArrayInputStream *raw_input = new ArrayInputStream(pBuffer, bufSize);
+    if (raw_input == NULL)
+        return false;
+
+    CodedInputStream* coded_input = new CodedInputStream(raw_input);
+    if (coded_input == NULL)
+    {
+        delete raw_input;
+        return false;
+    }
+
+    coded_input->SetTotalBytesLimit(kProtoReadBytesLimit, 815792128);	// 778MBytes
+
+    bool success = proto->ParseFromCodedStream(coded_input);
+
+    delete coded_input;
+    delete raw_input;
+
+    return success;
 }
 
 void WriteProtoToBinaryFile(const Message& proto, const char* filename) {

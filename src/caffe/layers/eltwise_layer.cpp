@@ -24,7 +24,7 @@ namespace caffe {
                 coeffs_[i] = this->layer_param().eltwise_param().coeff(i);
             }
         }
-        if (op_ == EltwiseParameter_EltwiseOp_SUM)
+        if (op_ == EltwiseParameter_EltwiseOp_WEIGHTEDSUM)
         {
             this->blobs_.resize(1);
             // this->blobs_[0]->Reshape(bottom.size(), 1, 1, 1);
@@ -71,11 +71,10 @@ namespace caffe {
             }
             break;
         case EltwiseParameter_EltwiseOp_SUM:
-            mutable_coeff = this->blobs_[0]->cpu_data();
             caffe_set(count, Dtype(0), top_data);
             // TODO(shelhamer) does BLAS optimize to sum for coeff = 1?
             for (int i = 0; i < bottom.size(); ++i) {
-                caffe_axpy(count, mutable_coeff[i], bottom[i]->cpu_data(), top_data);             //b[i]=alph*a[i]+b[i]
+                caffe_axpy(count, coeffs_[i], bottom[i]->cpu_data(), top_data);
             }
             break;
         case EltwiseParameter_EltwiseOp_MAX:
@@ -115,11 +114,12 @@ namespace caffe {
                 caffe_mul(count, top_data, sort_temp_.cpu_data(), top_data);
             }
             break;
-        case EltwiseParameter_EltwiseOp_SIMPLESUM:
+        case EltwiseParameter_EltwiseOp_WEIGHTEDSUM:
+            mutable_coeff = this->blobs_[0]->cpu_data();
             caffe_set(count, Dtype(0), top_data);
             // TODO(shelhamer) does BLAS optimize to sum for coeff = 1?
             for (int i = 0; i < bottom.size(); ++i) {
-                caffe_axpy(count, coeffs_[i], bottom[i]->cpu_data(), top_data);
+                caffe_axpy(count, mutable_coeff[i], bottom[i]->cpu_data(), top_data);             //b[i]=alph*a[i]+b[i]
             }
             break;
         default:
@@ -186,12 +186,12 @@ namespace caffe {
                     caffe_mul(count, bottom_diff, top_diff, bottom_diff);
                     break;
                 case EltwiseParameter_EltwiseOp_SUM:
-                    mutable_coeff_diff = this->blobs_[0]->mutable_cpu_diff();
-                    mutable_coeff_data = this->blobs_[0]->cpu_data();
-                    caffe_cpu_scale(count, mutable_coeff_data[i], top_diff, bottom_diff);
-                    // LOG(INFO)<<"mutable_coeff_old:"<<mutable_coeff_data[i]<<endl;
-                    mutable_coeff_diff[i] = caffe_cpu_dot(count, top_diff, bottom_data) / Dtype(bottom[0]->num());
-                    //  LOG(INFO)<<"mutable_coeff:"<<mutable_coeff_diff[i]<<endl;
+                    if (coeffs_[i] == Dtype(1)) {
+                        caffe_copy(count, top_diff, bottom_diff);
+                    }
+                    else {
+                        caffe_cpu_scale(count, coeffs_[i], top_diff, bottom_diff);
+                    }
                     break;
                 case EltwiseParameter_EltwiseOp_MAX:
                     mask = max_idx_.cpu_data();
@@ -228,13 +228,13 @@ namespace caffe {
                     }
                     caffe_mul(count, bottom_diff, top_diff, bottom_diff);
                     break;
-                case EltwiseParameter_EltwiseOp_SIMPLESUM:
-                    if (coeffs_[i] == Dtype(1)) {
-                        caffe_copy(count, top_diff, bottom_diff);
-                    }
-                    else {
-                        caffe_cpu_scale(count, coeffs_[i], top_diff, bottom_diff);
-                    }
+                case EltwiseParameter_EltwiseOp_WEIGHTEDSUM:
+                    mutable_coeff_diff = this->blobs_[0]->mutable_cpu_diff();
+                    mutable_coeff_data = this->blobs_[0]->cpu_data();
+                    caffe_cpu_scale(count, mutable_coeff_data[i], top_diff, bottom_diff);
+                    // LOG(INFO)<<"mutable_coeff_old:"<<mutable_coeff_data[i]<<endl;
+                    mutable_coeff_diff[i] = caffe_cpu_dot(count, top_diff, bottom_data) / Dtype(bottom[0]->num());
+                    //  LOG(INFO)<<"mutable_coeff:"<<mutable_coeff_diff[i]<<endl;
                     break;
                 default:
                     LOG(FATAL) << "Unknown elementwise operation.";

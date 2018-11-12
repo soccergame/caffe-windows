@@ -102,6 +102,9 @@ inline void ReadProtoFromBinaryFileOrDie(const string& filename,
   ReadProtoFromBinaryFileOrDie(filename.c_str(), proto);
 }
 
+// Read parameters from memory buffer  [11/12/2018 hzx]
+bool ReadProtoFromBuffer(const unsigned char* pBuffer, 
+    int bufSize, Message* proto);
 
 void WriteProtoToBinaryFile(const Message& proto, const char* filename);
 inline void WriteProtoToBinaryFile(

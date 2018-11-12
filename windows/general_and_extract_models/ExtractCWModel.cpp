@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         std::string szNetFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_age_gender_net.prototxt";
         std::string szWeightFile = "D:/project/caffe-windows/Build/x64/Debug/deploy_cw_age_gender_net.caffemodel";
         
-        std::string image_path = "E:/工作资料/[2]图像部门/[4]图像数据/[1]人脸数据/ID_T_norm/sample_dy/sn04030481_norm1.jpg";
+        std::string image_path = "E:/工作资料/[2]图像部门/[4]图像数据/[1]人脸数据/豆芽为查询集/每个ID不分文件夹/sample_dy/sn00060028.jpg";
   //      AutoArray<char> encryptedData;
   //      int widthByte = 0;
   //      std::fstream fp;
@@ -117,6 +117,7 @@ int main(int argc, char *argv[])
         }
         else {
             cv::Mat ori_image = cv::imread(image_path, CV_LOAD_IMAGE_GRAYSCALE);
+            cv::resize(ori_image, ori_image, cv::Size(128, 128));
 
             caffe::Caffe::set_mode(caffe::Caffe::CPU);
             caffe::NetParameter param;
@@ -180,25 +181,6 @@ int main(int argc, char *argv[])
                 printf("女人，年龄%0.1f岁\n", age);
             
         }
-        
-        
-        //// 那么C如何读取deploy和caffemodel呢？
-        //// 首先选择是CPU还是GPU
-        //caffe::Caffe::set_mode(caffe::Caffe::CPU);
-        //// 定义网络参数
-        //caffe::NetParameter param;
-        //
-        //// 从二进制文件中读取deploy文件  
-        //// caffe::ReadProtoFromBinaryFileOrDie(strNetPath.c_str(), &param);
-        //// 如果要从普通的deploy.prototxt中读取网络结构，就需要：
-        //caffe::ReadProtoFromTextFileOrDie(szNetFile.c_str(), &param);
-        //// 然后表明是TEST
-        //param.mutable_state()->set_phase(caffe::TEST);
-        //// 接下来设置网络结构
-        //caffe::Net<float> *pCaffeNet = new caffe::Net<float>(param);
-        //// 初始化网络权重，这样就可以直接调用网络了
-        //pCaffeNet->CopyTrainedLayersFromBinaryProto(szWeightFile.c_str());
-        //// 后面可以直接调用网络
     }
     catch (int errcode)
     {

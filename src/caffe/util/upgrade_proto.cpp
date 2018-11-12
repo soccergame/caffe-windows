@@ -99,6 +99,13 @@ namespace caffe {
         UpgradeNetAsNeeded(param_file, param);
     }
 
+    int ReatNetParamsFromBuffer(const unsigned char *pBuffer, 
+        int bufSize, NetParameter* param) {
+        if (!ReadProtoFromBuffer(pBuffer, bufSize, param))
+            return 5;	// THID_ERR_FILEIO
+        return 0;	// THID_ERR_NONE
+    }
+
     bool NetNeedsV0ToV1Upgrade(const NetParameter& net_param) {
         for (int i = 0; i < net_param.layers_size(); ++i) {
             if (net_param.layers(i).has_layer()) {
