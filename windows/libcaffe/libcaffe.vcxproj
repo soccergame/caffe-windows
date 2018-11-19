@@ -108,6 +108,7 @@
     <ClCompile Include="..\..\src\caffe\layers\bn_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\center_loss_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\channel_scale_layer.cpp" />
+    <ClCompile Include="..\..\src\caffe\layers\clip_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\concat_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\confidence_penalty_loss_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\contrastive_loss_layer.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="..\..\src\caffe\layers\split_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\spp_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\subregion_layer.cpp" />
+    <ClCompile Include="..\..\src\caffe\layers\swish_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\tanh_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\threshold_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\layers\tile_layer.cpp" />
@@ -262,6 +264,7 @@
     <ClInclude Include="..\..\include\caffe\layers\bn_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\center_loss_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\channel_scale_layer.hpp" />
+    <ClInclude Include="..\..\include\caffe\layers\clip_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\concat_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\confidence_penalty_loss_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\contrastive_loss_layer.hpp" />
@@ -338,6 +341,7 @@
     <ClInclude Include="..\..\include\caffe\layers\soft_truncation_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\split_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\spp_layer.hpp" />
+    <ClInclude Include="..\..\include\caffe\layers\swish_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\tanh_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\threshold_layer.hpp" />
     <ClInclude Include="..\..\include\caffe\layers\tile_layer.hpp" />
@@ -476,6 +480,7 @@
     <None Include="..\..\src\caffe\layers\batch_reindex_layer.cu" />
     <None Include="..\..\src\caffe\layers\bias_layer.cu" />
     <None Include="..\..\src\caffe\layers\bn_layer.cu" />
+    <None Include="..\..\src\caffe\layers\clip_layer.cu" />
     <None Include="..\..\src\caffe\layers\concat_layer.cu" />
     <None Include="..\..\src\caffe\layers\contrastive_loss_layer.cu" />
     <None Include="..\..\src\caffe\layers\conv_dw_layer.cu" />
@@ -521,6 +526,7 @@
     <None Include="..\..\src\caffe\layers\softmax_layer.cu" />
     <None Include="..\..\src\caffe\layers\softmax_loss_layer.cu" />
     <None Include="..\..\src\caffe\layers\split_layer.cu" />
+    <None Include="..\..\src\caffe\layers\swish_layer.cu" />
     <None Include="..\..\src\caffe\layers\tanh_layer.cu" />
     <None Include="..\..\src\caffe\layers\threshold_layer.cu" />
     <None Include="..\..\src\caffe\layers\tile_layer.cu" />

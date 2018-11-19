@@ -170,8 +170,8 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         break;
 	  case EltwiseParameter_EltwiseOp_WEIGHTEDSUM:
 	    mutable_coeff_diff = this->blobs_[0]->mutable_gpu_diff();
-	    mutable_coeff = this->blobs_[0]->gpu_data();
-        caffe_gpu_scale(count, mutable_coeff[i], top_diff, bottom_diff);
+	    mutable_coeff_data = this->blobs_[0]->gpu_data();
+        caffe_gpu_scale(count, mutable_coeff_data[i], top_diff, bottom_diff);
 		caffe_gpu_dot(count, top_diff, bottom_data, &mutable_coeff_diff[i]);
 		mutable_coeff_diff[i] /= Dtype(bottom[0]->num());   
         break;

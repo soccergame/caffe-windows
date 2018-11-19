@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 149 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 153 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -370,6 +370,8 @@ message LayerParameter {
   optional ArgMaxParameter argmax_param = 103;
   optional BatchNormParameter batch_norm_param = 139;
   optional BiasParameter bias_param = 141;
+  optional BNParameter bn_param = 140;
+  optional ClipParameter clip_param = 148;
   optional ConcatParameter concat_param = 104;
   optional ContrastiveLossParameter contrastive_loss_param = 105;
   optional ConvolutionParameter convolution_param = 106;
@@ -378,7 +380,7 @@ message LayerParameter {
   optional DropoutParameter dropout_param = 108;
   optional DummyDataParameter dummy_data_param = 109;
   optional EltwiseParameter eltwise_param = 110;
-  optional ELUParameter elu_param = 200;
+  optional ELUParameter elu_param = 149;
   optional EmbedParameter embed_param = 137;
   optional ExpParameter exp_param = 111;
   optional FlattenParameter flatten_param = 135;
@@ -391,8 +393,10 @@ message LayerParameter {
   optional InputParameter input_param = 143;
   optional LogParameter log_param = 134;
   optional LRNParameter lrn_param = 118;
+  optional MAEParameter mae_param = 151;
   optional MemoryDataParameter memory_data_param = 119;
   optional MVNParameter mvn_param = 120;
+  optional OrdinalRegressionParameter ordinal_regression_loss_param = 150;
   optional ParameterParameter parameter_param = 145;
   optional PoolingParameter pooling_param = 121;
   optional PowerParameter power_param = 122;
@@ -403,18 +407,17 @@ message LayerParameter {
   optional ReLUParameter relu_param = 123;
   optional ReshapeParameter reshape_param = 133;
   optional ScaleParameter scale_param = 142;
+  optional ShuffleChannelParameter shuffle_channel_param = 152;
   optional SigmoidParameter sigmoid_param = 124;
   optional SoftmaxParameter softmax_param = 125;
   optional SPPParameter spp_param = 132;
   optional SliceParameter slice_param = 126;
+  optional SwishParameter swish_param = 147;
   optional TanHParameter tanh_param = 127;
   optional ThresholdParameter threshold_param = 128;
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
-  optional BNParameter bn_param = 140;
-  optional OrdinalRegressionParameter ordinal_regression_loss_param = 147;
-  optional MAEParameter mae_param = 148;
-  optional ShuffleChannelParameter shuffle_channel_param = 164;
+  // Happynear's windows caffe defined layers
   optional LocalParameter local_param = 201;
   optional InsanityParameter insanity_param = 202;
   optional TripletLossParameter triplet_loss_param = 203;
@@ -424,8 +427,6 @@ message LayerParameter {
   optional NoiseParameter noise_param = 207;
   optional HotspotParameter hotspot_param = 208;
   optional PredictBoxParameter predict_box_param = 209;
-  optional MILDataParameter mil_data_param = 0x004d4944; //"MID"
-  optional MILParameter mil_param = 0x004d494c; //"MIL"
   optional FCNDataParameter fcn_data_param = 210;
   optional CenterLossParameter center_loss_param = 211;
   optional FlipParameter flip_param = 212;
@@ -456,6 +457,8 @@ message LayerParameter {
   optional LabelSpecificAffineParameter label_specific_affine_param = 238;
   optional LabelSpecificHardMarginParameter label_specific_hard_margin_param = 239;
   optional LabelSpecificAddParameter label_specific_add_param = 241;
+  optional MILDataParameter mil_data_param = 242; //"MID"
+  optional MILParameter mil_param = 243; //"MIL"
 }
 
 // Message that stores parameters used to apply transformation
@@ -550,6 +553,13 @@ message ArgMaxParameter {
   // for each index of the first / num dimension.
   optional int32 axis = 3;
 }
+
+// Message that stores parameters used by ClipLayer
+message ClipParameter {
+  required float min = 1;
+  required float max = 2;
+}
+
 
 message ConcatParameter {
   // The axis along which to concatenate -- may be negative to index from the
@@ -1291,6 +1301,15 @@ message SoftmaxParameter {
   optional float cutting_point = 6;
   optional string normalize_type = 7 [default="Softmax"];
   optional float label_smooth_factor = 8 [default = 0.];
+}
+
+// Message that stores parameters used by SwishLayer
+message SwishParameter {
+  // Beta parameter for the Swish activation function
+  // Described in:
+  // Prajit Ramachandran, Barret Zoph, Quoc V. Le. (2017). Searching for
+  // Activation Functions. https://arxiv.org/abs/1710.05941v2
+  optional float beta = 1 [default = 1];
 }
 
 message TanHParameter {
