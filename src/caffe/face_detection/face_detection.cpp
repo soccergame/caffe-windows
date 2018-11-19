@@ -1,6 +1,6 @@
-#include "caffe/face_detection.hpp" 
-#include "caffe/autoarray.h"
-#include "caffe/AlgorithmUtils.h"
+#include "caffe/face_detection/face_detection.hpp" 
+#include "caffe/face_detection/autoarray.h"
+#include "caffe/face_detection/AlgorithmUtils.h"
 #ifdef _WIN32
 #include <io.h>
 #define R_OK 4 /* Test for read permission. */

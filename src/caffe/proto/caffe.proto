@@ -482,14 +482,68 @@ message TransformationParameter {
   optional bool force_color = 6 [default = false];
   // Force the decoded image to have 1 color channels.
   optional bool force_gray = 7 [default = false];
-  optional uint32 crop_h = 8 [default = 0];
-  optional uint32 crop_w = 9 [default = 0];
-  optional bool center_crop = 10 [default = false];
-  optional float erase_ratio = 11 [default = 0];
-  optional float scale_min = 12 [default = 0.02];
-  optional float scale_max = 13 [default = 0.4];
-  optional float aspect_min = 14 [default = 0.33];
-  optional float aspect_max = 15 [default = 3];
+  // Specify the patch location
+  repeated uint32 patch_center_x = 8 [packed = true];
+  repeated uint32 patch_center_y = 9 [packed = true];
+  // Specify the patch size
+  optional uint32 patch_height = 10 [default = 0];
+  optional uint32 patch_width = 11 [default = 0];
+  // Specify the augmentation
+  message ScaleFactorParameter {
+    optional float min_factor = 1 [default = 1];
+    optional float max_factor = 2 [default = 1];
+  }
+  message CoverSizeParameter {
+    optional uint32 min_size = 1 [default = 0];
+    optional uint32 max_size = 2 [default = 0];
+  }
+  message GaussianAugParameter {
+    optional float mean_value = 1 [default = 0];
+    optional float variance_value = 2 [default = 1];
+  }
+  message AdjustmentsAugParameter {
+    optional float max_brightness = 1 [default = 0];
+    optional float min_saturation = 2 [default = 0];
+    optional float max_saturation = 3 [default = 0];
+    optional float max_hue = 4 [default = 0];
+    optional float min_contrast = 5 [default = 0];
+    optional float max_contrast = 6 [default = 0];
+  }
+  optional ScaleFactorParameter scale_factor = 12;
+  optional CoverSizeParameter cover_size = 13;
+  optional GaussianAugParameter gaussian_para = 14;
+  optional double roll_angle = 15 [default = 0];
+  optional bool color_augmentation = 16 [default = false];
+  optional float filled_pixels = 17 [default = 0];
+  optional int32 margin = 18 [default = 0];
+  optional AdjustmentsAugParameter adjustment_para = 19;
+  
+  message FishEyeParameter {
+    // minimum distortion ratio & maximum distortion ratio, controls the amount of distortion, the larger, the more distortion
+    //    distortion ratio usually ranges from [0.00001, 0.00005]
+    optional float min_distort_ratio = 1 [default = 0];
+    optional float max_distort_ratio = 2 [default = 0];
+    // x coordinate of center of distortion
+    optional uint32 center_x = 3;
+    // y coordinate of center of distortion
+    optional uint32 center_y = 4;
+  }
+  optional FishEyeParameter fisheye_param = 20;
+
+  // It will also resize images if new_height or new_width are not zero.
+  optional uint32 new_height = 21 [default = 0];
+  optional uint32 new_width = 22 [default = 0];
+  // new_size adn new_height, new_width can't be set simultaneously.
+  optional uint32 new_size = 23 [default = 0];
+
+  optional uint32 crop_h = 24 [default = 0];
+  optional uint32 crop_w = 25 [default = 0];
+  //optional bool center_crop = 26 [default = false];
+  //optional float erase_ratio = 27 [default = 0.0];
+  //optional float scale_min = 28 [default = 0.02];
+  //optional float scale_max = 29 [default = 0.4];
+  //optional float aspect_min = 30 [default = 0.33];
+  //optional float aspect_max = 31 [default = 3];
 }
 
 // Message that stores parameters shared by loss layers

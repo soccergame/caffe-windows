@@ -70,8 +70,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="face_detection.cpp" />
-    <ClCompile Include="norm_face.cpp" />
+    <ClCompile Include="..\..\examples\face_detection\norm_face.cpp" />
+    <ClCompile Include="..\..\src\caffe\face_detection\face_detection.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(SolutionDir)\CommonSettings.targets" />

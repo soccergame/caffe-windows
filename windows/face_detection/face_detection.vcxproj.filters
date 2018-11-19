@@ -9,10 +9,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="face_detection.cpp">
+    <ClCompile Include="..\..\examples\face_detection\norm_face.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="norm_face.cpp">
+    <ClCompile Include="..\..\src\caffe\face_detection\face_detection.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
