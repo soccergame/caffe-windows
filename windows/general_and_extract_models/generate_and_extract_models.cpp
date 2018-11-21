@@ -34,8 +34,8 @@ int _tmain(int argc, TCHAR *argv[])
             false, TCLAP_TEXT(""),
             TCLAP_TEXT("result directory"), cmd);
 
-        TCLAP::SwitchArg GenerateOrExtractedAugSwitch(_T("e"), 
-            _T("extracted"), _T("when specified, needs to extract models"), 
+        TCLAP::SwitchArg GenerateOrExtractedAugSwitch(_T("e"),
+            _T("extracted"), _T("when specified, needs to extract models"),
             cmd, false);
 
         cmd.parse(argc, argv);
@@ -61,17 +61,18 @@ int _tmain(int argc, TCHAR *argv[])
 
                 if (dataSize <= 0)
                     throw 1;
-                
+
                 int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
                 // encrypt data by shift left		
                 int numOfData = dataSize / sizeof(pBuffer[0]);
                 for (int j = 0; j < numOfData; ++j)
                 {
-                  int tempData = pBuffer[j];
-                  pBuffer[i] = brc_sn::ror(
-                      static_cast<unsigned int>(tempData), 
-                      brc_sn::g_shiftBits);
+                    int tempData = pBuffer[j];
+                    pBuffer[j] = brc_sn::ror(
+                        static_cast<unsigned int>(tempData),
+                        brc_sn::g_shiftBits);
                 }
+#ifndef OLD_VERSION
                 const int modelnumber = pBuffer[0];
                 std::vector<int> protoTxtLen, modelSize;
                 for (int j = 0; j < modelnumber; ++j)
@@ -112,15 +113,48 @@ int _tmain(int argc, TCHAR *argv[])
                     caffe::WriteProtoToTextFile((*nets), net_path.ToString());
                     caffe::WriteProtoToBinaryFile((*weights), weight_path.ToString());
                 }
+#else
+                const int protoTxtLen = pBuffer[0];
+                const int modelSize = pBuffer[1];
+                const unsigned char *pDataBuf =
+                    reinterpret_cast<unsigned char *>(
+                        encryptedData + sizeof(int) * 2);
+
+                std::unique_ptr<caffe::NetParameter> nets(new caffe::NetParameter);
+                int retValue = caffe::ReatNetParamsFromBuffer(pDataBuf, protoTxtLen, nets.get());
+                CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
+                CHECK(caffe::UpgradeNetAsNeeded("<memory>", nets.get()));
+
+                std::unique_ptr<caffe::NetParameter> weights(new caffe::NetParameter);
+                retValue = ReatNetParamsFromBuffer(pDataBuf + protoTxtLen, modelSize, weights.get());
+                CHECK_EQ(retValue, 0) << "Read net parameters from buffer error, code: " << retValue;
+                CHECK(caffe::UpgradeNetAsNeeded("<memory>", weights.get()));
+
+                CMyString base_name = model_names[i].BaseName().SubType();
+#ifdef _UNICODE
+                net_path.Format(_T("%ls/%ls_net.prototxt"),
+                    result_dir.c_str(), base_name.c_str());
+                weight_path.Format(_T("%ls/%ls_weight.caffemodel"),
+                    result_dir.c_str(), base_name.c_str());
+#else
+                net_path.Format(_T("%s/%s_net.prototxt"),
+                    result_dir.c_str(), base_name.c_str());
+                weight_path.Format(_T("%s/%s_weight.caffemodel"),
+                    result_dir.c_str(), base_name.c_str());
+#endif
+
+                caffe::WriteProtoToTextFile((*nets), net_path.ToString());
+                caffe::WriteProtoToBinaryFile((*weights), weight_path.ToString());
+#endif
             }
         }
         else {
             CMyString model_path;
             std::vector<CMyString> net_names, weight_names;
-            for (auto iter = model_paths.cbegin(); iter != model_paths.cend(); iter = iter+2)
+            for (auto iter = model_paths.cbegin(); iter != model_paths.cend(); iter = iter + 2)
             {
                 net_names.push_back(*iter);
-                weight_names.push_back(*(iter+1));
+                weight_names.push_back(*(iter + 1));
             }
 
             const int ModelNumber = net_names.size();
