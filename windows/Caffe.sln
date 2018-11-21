@@ -75,6 +75,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "general_and_extract_models"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_detection", "face_detection\face_detection.vcxproj", "{68DC5FE2-EADA-4220-A1BD-BEBDA228576A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_beauty", "face_beauty\face_beauty.vcxproj", "{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -235,6 +237,14 @@ Global
 		{68DC5FE2-EADA-4220-A1BD-BEBDA228576A}.Release|x64.ActiveCfg = Release|x64
 		{68DC5FE2-EADA-4220-A1BD-BEBDA228576A}.Release|x64.Build.0 = Release|x64
 		{68DC5FE2-EADA-4220-A1BD-BEBDA228576A}.Release|x86.ActiveCfg = Release|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Debug|x64.ActiveCfg = Debug|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Debug|x64.Build.0 = Debug|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Debug|x86.ActiveCfg = Debug|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Release|Any CPU.ActiveCfg = Release|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Release|x64.ActiveCfg = Release|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Release|x64.Build.0 = Release|x64
+		{437A4F11-F3BE-4981-BDA6-EBC542FBCBDD}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
