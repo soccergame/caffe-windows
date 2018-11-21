@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 153 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 154 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -396,6 +396,7 @@ message LayerParameter {
   optional MAEParameter mae_param = 151;
   optional MemoryDataParameter memory_data_param = 119;
   optional MVNParameter mvn_param = 120;
+  optional NormalizeParameter norm_param = 153;
   optional OrdinalRegressionParameter ordinal_regression_loss_param = 150;
   optional ParameterParameter parameter_param = 145;
   optional PoolingParameter pooling_param = 121;
@@ -420,7 +421,6 @@ message LayerParameter {
   // Happynear's windows caffe defined layers
   optional LocalParameter local_param = 201;
   optional InsanityParameter insanity_param = 202;
-  optional NormalizeParameter normalize_param = 203;
   optional ROIPoolingParameter roi_pooling_param = 204;
   optional EltwiseAffineParameter eltwise_affine_param = 205;
   optional SubRegionParameter sub_region_param = 206;
@@ -1821,9 +1821,15 @@ message FlipParameter {
   optional bool flip_height = 2 [default = false];
 }
 
+// Message that stores parameters used by NormalizeLayer
 message NormalizeParameter {
-  // This parameter can be set to false to normalize mean only
-  optional bool normalize_variance = 1 [default = true];
+  optional bool across_spatial = 1 [default = true];
+  // Initial value of scale. Default is 1.0 for all
+  optional FillerParameter scale_filler = 2;
+  // Whether or not scale parameters are shared across channels.
+  optional bool channel_shared = 3 [default = true];
+  // Epsilon for not dividing by zero while normalizing variance
+  optional float eps = 4 [default = 1e-10];
 }
 
 message GeneralContrastiveParameter {
