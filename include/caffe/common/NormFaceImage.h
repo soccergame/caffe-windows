@@ -5,8 +5,58 @@
 
 using namespace std;
 
-namespace THID
+namespace ALGORITHMUTILS
 {
+    // left_eye, right_eye, nose, left_mouse_corner and right_mouse_corner
+    const int g_numPoints = 5;
+    enum InterpolateType
+    {
+        Bilinear = 0,
+        Cubic = 1
+    };
+    static float g_Weights[5] = {
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+    };
+
+    // normalize to 128 
+    const int g_normSize_128 = 128;
+    static float g_NormPoints_128[10] = {
+        33.5f, 32.0f,
+        93.5f, 32.0f,
+        63.5f, 63.5f,
+        45.5f, 95.0f,
+        81.5f, 95.0f,
+    };
+    // normalize to 256
+    const int g_normSize_256 = 256;
+    static float g_NormPoints_256[10] = {
+        89.3095f, 72.9025f,
+        169.3095f, 72.9025f,
+        127.8949f, 127.0441f,
+        96.8796f, 184.8907f,
+        159.1065f, 184.7601f,
+    };
+    static float g_NormPoints_256_2[10] = {
+        30 * 2, 55 * 2,
+        98 * 2, 55 * 2,
+        63.5f * 2, 78 * 2,
+        43 * 2, 100 * 2,
+        85 * 2, 100 * 2,
+    };
+    // normalize to 160
+    const int g_normSize_160 = 160;
+    static float g_normPoints_160[10] = {
+        55, 65,
+        105, 65,
+        80, 95,
+        60, 115,
+        100, 115,
+    };
+
     inline void GetAccuratePosePosition(const float *faceFeaturePoint,
         float *innerEyePoint, float *mouthLeft, float *mouthRight)
     {
@@ -54,8 +104,9 @@ namespace THID
             fabs(pEyePoint[0] - pEyePoint[2]) + fabs(pEyePoint[1] - pEyePoint[3]) < 5.0f);
     }
 
-	inline unsigned char Interpolate(const unsigned char * pSrc, int width, int height, float curX, float curY,
-		float halfScaleX, float halfScaleY,	float maxOverlapX, float maxOverlapY)
+	inline unsigned char Interpolate(const unsigned char * pSrc, int width, 
+        int height, float curX, float curY, float halfScaleX, 
+        float halfScaleY,	float maxOverlapX, float maxOverlapY)
 	{
 		const float EPS = 0.00001f;
 
@@ -103,6 +154,77 @@ namespace THID
 			sumValue = 255;
 		return static_cast<unsigned char>(sumValue);
 	}
+
+    inline int AlignmentFeaturePoints(const float *pfFeap1, 
+        const float *pfFeap2, const float *pfWeight, int dPointNum, 
+        float *pfRotA, float &pfShiftX, float &pfShiftY)
+    {
+        // 输入合法性检查
+        if (0 == pfRotA || 0 == pfFeap1 || 0 == pfFeap2 || 0 == pfWeight)
+            return -99;
+
+        if (0 >= dPointNum)
+            return -99;
+
+        // 初始变量定义
+        int errorCode = 0;
+        float xx1 = 0.0f, xx2 = 0.0f, yy1 = 0.0f, yy2 = 0.0f, z = 0.0f;
+        float w = 0.0f, c1 = 0.0f, c2 = 0.0f;
+        const float EPS = 0.000001f;
+
+        try
+        {
+            // 计算矩阵系数
+            for (int i = 0; i < dPointNum; ++i)
+            {
+                // xx1 = x1'*weight; xx2 = x2'*weight; yy1 = y1'*weight; yy2 = y2'*weight;
+                xx1 = xx1 + pfWeight[i] * pfFeap2[2 * i];
+                xx2 = xx2 + pfWeight[i] * pfFeap1[2 * i];
+                yy1 = yy1 + pfWeight[i] * pfFeap2[2 * i + 1];
+                yy2 = yy2 + pfWeight[i] * pfFeap1[2 * i + 1];
+                w = w + pfWeight[i];
+
+                // c1 = weight' * (x1.*x2 + y1.*y2);
+                c1 = c1 +
+                    pfWeight[i] *
+                    (pfFeap2[2 * i] * pfFeap1[2 * i] +
+                        pfFeap2[2 * i + 1] * pfFeap1[2 * i + 1]);
+                // c2 = weight' * (y1.*x2 - x1.*y2);
+                c2 = c2 +
+                    pfWeight[i] *
+                    (pfFeap2[2 * i + 1] * pfFeap1[2 * i] -
+                        pfFeap2[2 * i] * pfFeap1[2 * i + 1]);
+                // z  = weight' * (x2.*x2 + y2.*y2);
+                z = z +
+                    pfWeight[i] *
+                    (pfFeap1[2 * i] * pfFeap1[2 * i] +
+                        pfFeap1[2 * i + 1] * pfFeap1[2 * i + 1]);
+            }
+
+            float temp = xx2 * xx2 + yy2 * yy2 - w * z + EPS;
+
+            pfRotA[0] = (xx1 * xx2 + yy1 * yy2 - w * c1) / temp;
+            pfRotA[1] = (xx1 * yy2 + w * c2 - yy1 * xx2) / temp;
+            pfRotA[2] = -pfRotA[1];
+            pfRotA[3] = pfRotA[0];
+            pfShiftX = (c1 * xx2 - z * xx1 - c2 * yy2) / temp;
+            pfShiftY = (c2 * xx2 + c1 * yy2 - z * yy1) / temp;
+        }
+        catch (const std::bad_alloc &)
+        {
+            errorCode = 2;
+        }
+        catch (const int &errCode)
+        {
+            errorCode = errCode;
+        }
+        catch (...)
+        {
+            errorCode = 1;
+        }
+
+        return errorCode;
+    }
 
 	/** normalize image according the paper
 	 * X. Wu, "Learning Robust Deep Face Representation," ArXiv e-prints, July 2015.
@@ -165,7 +287,202 @@ namespace THID
 	//	int m_distEyeCMouthC;	// distance between eye center and mouth center
 	//	float m_normEyeC[2];	// normalized image's eye center
 	//	float m_normMouthC[2];	// normalized image's mouth center
-	//};	
+	//};
+    class CNormImageSimilarity
+    {
+    public:
+        CNormImageSimilarity()
+        {
+            m_inited = false;
+            m_pfWeight = 0;
+            m_pfNormPoints = 0;
+            m_normWidth = 0;
+            m_normHeight = 0;
+        }
+        ~CNormImageSimilarity()
+        {
+            ReleaseAll();
+        }
+
+        int Initialize(int normWidth, int normHeight, 
+            float scale = 1.0f, int normSize = g_normSize_128,
+            const float *pNormPoints = g_NormPoints_128,
+            const float *pWeights = g_Weights, 
+            int numPoints = g_numPoints) {
+
+            assert(normWidth > 0);
+            assert(normHeight > 0);
+            assert(pNormPoints != nullptr);
+            assert(numPoints > 0);
+            assert(normWidth == normHeight);
+
+            m_normWidth = normWidth;
+            m_normHeight = normHeight;
+
+            m_pfWeight = new float[numPoints];
+            m_pfNormPoints = new float[2 * numPoints];
+            for (int i = 0; i < numPoints; ++i) {
+                m_pfWeight[i] = pWeights[i];
+                m_pfNormPoints[2 * i] = pNormPoints[2 * i] * scale + 
+                    0.5f * float(normWidth - normSize * scale);
+                m_pfNormPoints[2 * i + 1] = pNormPoints[2 * i + 1] * scale + 
+                    0.5f * float(normHeight - normSize * scale);
+            }   
+
+            m_inited = true;
+            return 0;
+        }
+
+        int NormImage(const unsigned char *pRaw, int width, int height,
+            const float *pFeaPoints, int numFeaPoints,
+            unsigned char *pNormFace) const {
+
+            if (!m_inited)
+                return -1;
+            assert(pRaw != nullptr && pFeaPoints != nullptr && pNormFace != nullptr);
+            assert(width > 0 && height > 0);
+            assert(numFeaPoints > 0);
+
+            int errorCode = 0;
+            float fShiftX, fShiftY, fScale;
+            try
+            { 
+                float pfRotA[4] = { 0.0 };
+                errorCode = AlignmentFeaturePoints(pFeaPoints,
+                    m_pfNormPoints, m_pfWeight, numFeaPoints,
+                    pfRotA, fShiftX, fShiftY);
+                if (0 != errorCode)
+                    throw errorCode;
+
+                memset(pNormFace, 0, 
+                    sizeof(unsigned char)*m_normWidth*m_normHeight);
+                fScale = sqrt(pfRotA[0] * pfRotA[0] + pfRotA[1] * pfRotA[1]);
+                errorCode = ImageTranByRST(pRaw, width, height, pfRotA, 
+                    fShiftX, fShiftY, fScale, fScale, pNormFace);
+            }
+            catch (const std::bad_alloc &)
+            {
+                errorCode = 2;
+            }
+            catch (const int &errCode)
+            {
+                errorCode = errCode;
+            }
+            catch (...)
+            {
+                errorCode = 1;
+            }
+
+            return errorCode;
+        }
+    private:
+        // Operation
+        void ReleaseAll() {
+            if (0 != m_pfWeight)
+                delete[]m_pfWeight;
+            m_pfWeight = 0;
+
+            if (0 != m_pfNormPoints)
+                delete[]m_pfNormPoints;
+            m_pfNormPoints = 0;
+
+            m_normWidth = 0;
+            m_normHeight = 0;
+
+            m_inited = false;
+        }
+
+        inline int ImageTranByRST(const unsigned char *pbySrcImage,
+            int dSrcImgWidth,	// 输入图像的宽
+            int dSrcImgHeight,	// 输入图像的高 
+            const float *pfRotA,// 变换对应的旋转矩阵
+            float fShiftX,		// 变换对应的X方向上的平移
+            float fShiftY,		// 变换对应的Y方向上的平移
+            float fScaleX,		// 变换对应的X方向上的缩放尺度
+            float fScaleY,		// 变换对应的Y方向上的缩放尺度
+            unsigned char *pbyDstImage) const
+        {
+            // 输入合法性检查
+            if (0 == pbySrcImage || 0 > dSrcImgWidth || 
+                0 > dSrcImgHeight || 0 == pbyDstImage ||
+                0 >= fScaleX || 0 >= fScaleY)
+                return -99;
+
+            if (fScaleX != fScaleY)
+                return -99;
+
+            if (!m_inited)
+                return -1;
+
+            // 定义变量
+            int errorCode = 0, x, y, cs;
+            float xs, ys, A11, A21, A12, A22, A13, A23;
+
+            float halfScale_X = fScaleX / 2.0f;
+            float halfScale_Y = fScaleY / 2.0f;
+            float maxOverlap_X = fScaleX > 1.0f ? fScaleX : 1.0f;
+            float maxOverlap_Y = fScaleY > 1.0f ? fScaleY : 1.0f;
+
+            try
+            {
+                /*  RotA*Src+T=Dst
+                Src = inv(RotA)*(Dst-T)*/
+                A11 = pfRotA[0] / (fScaleX*fScaleY);
+                A12 = pfRotA[2] / (fScaleX*fScaleY);
+                A13 = -A11*fShiftX - A12*fShiftY;
+                A21 = pfRotA[1] / (fScaleX*fScaleY);
+                A22 = pfRotA[3] / (fScaleX*fScaleY);
+                A23 = -A21*fShiftX - A22*fShiftY;
+
+                unsigned char *dst = pbyDstImage;
+                for (y = 0; y < m_normHeight; ++y)
+                {
+                    xs = A12*y + A13;
+                    ys = A22*y + A23;
+                    for (x = 0; x < m_normWidth; ++x, ++dst)
+                    {
+                        if (xs < 0 || ys < 0 || xs > dSrcImgWidth - 1 || ys > dSrcImgHeight - 1)
+                        {
+                            xs += A11;
+                            ys += A21;
+                            continue;
+                        }
+                        else
+                        {
+                            (*dst) = Interpolate(pbySrcImage, dSrcImgWidth,
+                                dSrcImgHeight, xs, ys, halfScale_X, 
+                                halfScale_Y, maxOverlap_X, maxOverlap_Y);
+
+                            xs += A11;
+                            ys += A21;
+                        }
+                    }
+                }
+                dst = 0;
+            }
+            catch (const std::bad_alloc &)
+            {
+                errorCode = 2;
+            }
+            catch (const int &errCode)
+            {
+                errorCode = errCode;
+            }
+            catch (...)
+            {
+                errorCode = 1;
+            }
+
+            return errorCode;
+        }
+
+        // Attributes
+        bool m_inited;
+        float *m_pfWeight;
+        float *m_pfNormPoints;
+        int m_normWidth;
+        int m_normHeight;
+    };
 
 	// normWidth = normHeight = 148, eyeCenterY = 45, distEyeCMouthC = distEyeCenter = 56
 	// normWidth = normHeight = 128, eyeCenterY = 35, distEyeCMouthC = distEyeCenter = 56
@@ -183,16 +500,22 @@ namespace THID
 			ReleaseAll();
 		}
 		
-		int Initialize(int normWidth, int normHeight, int eyeCenterY, int distEyeCenterMouthCenter, int distEyeCenter)
+		int Initialize(int normWidth, int normHeight, 
+            float scale = 1.0f, int normSize = g_normSize_128,
+            const float *pNormPoints = g_NormPoints_128,
+            int numPoints = g_numPoints)
 		{
 			m_normWidth = normWidth;
 			m_normHeight = normHeight;
-			m_eyeCenterY = eyeCenterY;
-			m_distEyeCMouthC = distEyeCenterMouthCenter;		
-			m_distEyeCenter = distEyeCenter;
+            m_eyeCenterY = int(0.5 * ((pNormPoints[1] + pNormPoints[3]) * 
+                scale + normSize - normSize * scale) + 0.5);
+            m_distEyeCMouthC = int(0.5 * (pNormPoints[7] + pNormPoints[9] - 
+                pNormPoints[1] - pNormPoints[3]) * scale + 0.5);
+            m_distEyeCenter = int((pNormPoints[2] - pNormPoints[0]) * 
+                scale + 0.5);
 			
 			m_normMouthC[0] = float(m_normWidth) / 2.0f;
-			m_normMouthC[1] = float(eyeCenterY + m_distEyeCMouthC);
+			m_normMouthC[1] = float(m_eyeCenterY + m_distEyeCMouthC);
 
 			m_normLeftEye[0] = float(m_normWidth) / 2.0f - float(m_distEyeCenter) / 2.0f;
 			m_normLeftEye[1] = float(m_eyeCenterY);
@@ -207,16 +530,20 @@ namespace THID
 			return 0;
 		}
 
-        int NormImage(const unsigned char *pRaw, int width, int height, const float *pFeaPoints,
-            int numFeaPoints, unsigned char *pNormFace) const
+        int NormImage(const unsigned char *pRaw, int width, int height, 
+            const float *pFeaPoints, int numFeaPoints, 
+            unsigned char *pNormFace) const
         {
-            {
-                if (!m_inited)
-                    return -1;
-                assert(pRaw != nullptr && pFeaPoints != nullptr && pNormFace != nullptr);
-                assert(width > 0 && height > 0);
-                assert(numFeaPoints == 5 || numFeaPoints == 88);
+            if (!m_inited)
+                return -1;
+            assert(pRaw != nullptr && pFeaPoints != nullptr && pNormFace != nullptr);
+            assert(width > 0 && height > 0);
+            assert(numFeaPoints > 0);
 
+            int errorCode = 0;
+
+            try
+            {
                 // get eye center & mouth center
                 float eyePoint[4];
                 float nose[2];
@@ -295,11 +622,12 @@ namespace THID
                 const int AXIS_DIM = 2;
                 firstLineMul = vectorX[AXIS_DIM * AXIS_DIM];
                 secondLineMul = vectorX[AXIS_DIM * AXIS_DIM + 1];
+                unsigned char *pDst = pNormFace;
                 for (int j = 0; j < m_normHeight; ++j)
                 {
                     firstParam = 0;
                     secondParam = 0;
-                    for (int i = 0; i < m_normWidth; ++i)
+                    for (int i = 0; i < m_normWidth; ++i, ++pDst)
                     {
                         float srcX = firstLineMul + firstParam;
                         float srcY = secondLineMul + secondParam;
@@ -307,18 +635,32 @@ namespace THID
                         firstParam += vectorX[0];
                         secondParam += vectorX[2];
 
-                        pNormFace[j * m_normWidth + i] = Interpolate(pRaw, width, height, srcX, srcY, halfScale_X, halfScale_Y, maxOverlap_X, maxOverlap_Y);
+                        (*pDst) = Interpolate(pRaw, width, height, srcX, srcY, halfScale_X, halfScale_Y, maxOverlap_X, maxOverlap_Y);
 
                     }
                     firstLineMul += vectorX[1];
                     secondLineMul += vectorX[3];
                 }
-
-                return 0;
+                pDst = 0;
             }
+            catch (const std::bad_alloc &)
+            {
+                errorCode = 2;
+            }
+            catch (const int &errCode)
+            {
+                errorCode = errCode;
+            }
+            catch (...)
+            {
+                errorCode = 1;
+            }
+
+            return errorCode;
         }
 
-        int NormImageByEyeAndMouth(const unsigned char *pRaw, int width, int height, const float *pEyePoints,
+        int NormImageByEyeAndMouth(const unsigned char *pRaw, int width,
+            int height, const float *pEyePoints,
             const float *pmouthCenter, unsigned char *pNormFace) const
         {
             if (!m_inited)
@@ -366,11 +708,12 @@ namespace THID
             const int AXIS_DIM = 2;
             firstLineMul = vectorX[AXIS_DIM * AXIS_DIM];
             secondLineMul = vectorX[AXIS_DIM * AXIS_DIM + 1];
+            unsigned char *pDst = pNormFace;
             for (int j = 0; j < m_normHeight; ++j)
             {
                 firstParam = 0;
                 secondParam = 0;
-                for (int i = 0; i < m_normWidth; ++i)
+                for (int i = 0; i < m_normWidth; ++i, ++pDst)
                 {
                     float srcX = firstLineMul + firstParam;
                     float srcY = secondLineMul + secondParam;
@@ -378,13 +721,15 @@ namespace THID
                     firstParam += vectorX[0];
                     secondParam += vectorX[2];
 
-                    pNormFace[j * m_normWidth + i] = Interpolate(pRaw, width, height, srcX, srcY, halfScale_X, halfScale_Y, maxOverlap_X, maxOverlap_Y);
+                    (*pDst) = Interpolate(pRaw, width, height, srcX, srcY, 
+                        halfScale_X, halfScale_Y, 
+                        maxOverlap_X, maxOverlap_Y);
 
                 }
                 firstLineMul += vectorX[1];
                 secondLineMul += vectorX[3];
             }
-
+            pDst = 0;
             return 0;
         }
 	private:
@@ -449,37 +794,6 @@ namespace THID
 		float m_affineMat[s_Mat_Dim * s_Mat_Dim];
 	};
 
-	const int g_numPoints = 5;
-	const int g_normSize = 256;
-	// left_eye, right_eye, nose, left_mouse_corner and right_mouse_corner
-	static float g_NormPoints[10] = {
-		89.3095f, 72.9025f,
-		169.3095f, 72.9025f,
-		127.8949f, 127.0441f,
-		96.8796f, 184.8907f,
-		159.1065f, 184.7601f,
-	};
-	static float g_anotherNormPoints[10] = {
-		30 * 2, 55 * 2,
-		98 * 2, 55 * 2,
-		63.5f * 2, 78 * 2,
-		43 * 2, 100 * 2,
-		85 * 2, 100 * 2,
-	};
-	enum InterpolateType
-	{
-		Bilinear = 0,
-		Cubic = 1
-	};
-
-	// normalize to 160
-	static float g_normPoints_160[10] = {
-		55, 65,
-		105, 65,
-		80, 95,
-		60, 115,
-		100, 115,
-	};
 	// normalize image by affine transform
 	class CAffineNormImage
 	{
@@ -492,8 +806,10 @@ namespace THID
 		{
 			ReleaseAll();
 		}
-        int Initialize(int normWidth, int normHeight, float scale = 1.0f, int normSize = g_normSize, const float *pNormPoints = g_NormPoints,
-            int numPoints = 5, InterpolateType type = Bilinear) {
+        int Initialize(int normWidth, int normHeight, 
+            float scale = 1.0f, int normSize = g_normSize_128, 
+            const float *pNormPoints = g_NormPoints_128,
+            int numPoints = g_numPoints, InterpolateType type = Bilinear) {
             assert(normWidth > 0);
             assert(normHeight > 0);
             assert(pNormPoints != nullptr);
@@ -520,8 +836,9 @@ namespace THID
             return 0;
         }
 
-        int NormImage(const unsigned char *pRaw, int width, int height, const float *pFeaPoints,
-            int numFeaPoints, unsigned char *pNormFace) const
+        int NormImage(const unsigned char *pRaw, int width, int height, 
+            const float *pFeaPoints, int numFeaPoints, 
+            unsigned char *pNormFace) const
         {
             if (!m_inited)
                 return -1;
@@ -570,16 +887,18 @@ namespace THID
 
             float scale = sqrt(scaleX * scaleX + scaleY * scaleY);
             scale = 1.0f / scale;
+            unsigned char *pDst = pNormFace;
             for (int j = 0; j < m_normHeight; ++j)
             {
-                for (int i = 0; i < m_normWidth; ++i)
+                for (int i = 0; i < m_normWidth; ++i, ++pDst)
                 {
                     float x, y;
                     Affine(i, j, scaleX, scaleY, shiftX, shiftY, x, y);
-                    pNormFace[j * m_normWidth + i] = Interpolate(pRaw, width, height, x, y, scale);
+                    (*pDst) = Interpolate(pRaw,
+                        width, height, x, y, scale);
                 }
             }
-
+            pDst = 0;
             return 0;
         }
 
@@ -608,7 +927,9 @@ namespace THID
 			y = normX * scaleY + normY * scaleX + shiftY;
 		}
 
-		inline unsigned char Interpolate(const unsigned char * pSrc, int width, int height, float x, float y, float scale = 1.0f) const
+		inline unsigned char Interpolate(const unsigned char * pSrc, 
+            int width, int height, float x, float y, 
+            float scale = 1.0f) const
 		{
 			float ans = 0;
 			// bilinear interpolate
