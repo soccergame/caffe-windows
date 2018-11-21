@@ -420,7 +420,7 @@ message LayerParameter {
   // Happynear's windows caffe defined layers
   optional LocalParameter local_param = 201;
   optional InsanityParameter insanity_param = 202;
-  optional TripletLossParameter triplet_loss_param = 203;
+  optional NormalizeParameter normalize_param = 203;
   optional ROIPoolingParameter roi_pooling_param = 204;
   optional EltwiseAffineParameter eltwise_affine_param = 205;
   optional SubRegionParameter sub_region_param = 206;
@@ -431,7 +431,7 @@ message LayerParameter {
   optional CenterLossParameter center_loss_param = 211;
   optional FlipParameter flip_param = 212;
   optional InnerDistanceParameter inner_distance_param = 213;
-  optional NormalizeParameter normalize_param = 214;
+  optional TripletLossParameter triplet_loss_param = 214;
   optional GeneralContrastiveParameter general_contrastive_loss_param = 215;
   optional SoftContrastiveParameter soft_contrastive_loss_param = 216;
   optional GeneralTripletParameter general_triplet_loss_param = 217;
@@ -1822,9 +1822,8 @@ message FlipParameter {
 }
 
 message NormalizeParameter {
-  optional string normalize_type = 1 [default = "L2"];
-  optional bool fix_gradient = 2 [default = false];
-  optional bool bp_norm = 3 [default = false];
+  // This parameter can be set to false to normalize mean only
+  optional bool normalize_variance = 1 [default = true];
 }
 
 message GeneralContrastiveParameter {
