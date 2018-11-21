@@ -116,6 +116,7 @@
     <ClCompile Include="..\..\src\caffe\test\test_mvn_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_net.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_neuron_layer.cpp" />
+    <ClCompile Include="..\..\src\caffe\test\test_normalize_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_ordinal_regression_loss_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_platform.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_pooling_layer.cpp" />
