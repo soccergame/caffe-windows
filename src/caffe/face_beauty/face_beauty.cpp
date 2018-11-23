@@ -187,10 +187,14 @@ int __stdcall InitDeepFeat(const char *szResName, int gpuID, BeautyHandle *pHand
                 brc_sn::g_shiftBits);
 		}
 
-		const int protoTxtLen = pBuffer[0];
-		const int modelSize = pBuffer[1];
-		const unsigned char *pDataBuf = 
-		    reinterpret_cast<unsigned char *>(encryptedData + sizeof(int) * 2);
+        const int modelnumber = pBuffer[0];
+        std::vector<int> protoTxtLen, modelSize;
+        for (int i = 0; i < modelnumber; ++i)
+        {
+            protoTxtLen.push_back(pBuffer[2 * i + 1]);
+            modelSize.push_back(pBuffer[2 * i + 2]);
+        }
+        unsigned char *pDataBuf = reinterpret_cast<unsigned char *>(encryptedData.begin()) + sizeof(int) * (2 * modelnumber + 1);
 
 		FLAGS_minloglevel = 2;	// INFO(=0)<WARNING(=1)<ERROR(=2)<FATAL(=3)
 
@@ -209,11 +213,11 @@ int __stdcall InitDeepFeat(const char *szResName, int gpuID, BeautyHandle *pHand
         caffe::NetParameter weight_param;
 
 		retValue = caffe::ReatNetParamsFromBuffer(
-            pDataBuf, protoTxtLen, &net_param);
+            pDataBuf, protoTxtLen[0], &net_param);
         CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
         CHECK(caffe::UpgradeNetAsNeeded("<memory>", &net_param));
         retValue = caffe::ReatNetParamsFromBuffer(
-            pDataBuf + protoTxtLen, modelSize, &weight_param);
+            pDataBuf + protoTxtLen[0], modelSize[0], &weight_param);
         CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
         CHECK(caffe::UpgradeNetAsNeeded("<memory>", &weight_param));
 
