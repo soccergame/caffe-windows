@@ -1,7 +1,7 @@
 #include "caffe/face_gender/face_gender.h"
 #include "caffe/face_detection/face_detection.hpp"
-#include "caffe/common/autoarray.h"
-#include "caffe/common/NormFaceImage.h"
+#include "autoarray.h"
+#include "NormFaceImage.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -220,22 +220,15 @@ int main(int argc, char** argv)
             throw retValue;
         }  
 
-        /*float NormPoints[10] = {
-            95.0f, 100.0f,
-            95.0f, 100.0f,
-            150.0f, 150.0f,
-            110.0f, 200.0f,
-            190.0f, 200.0f,
+        float NormPoints_128[10] = {
+            35.5f, 55.48f,
+            91.5f, 55.48f,
+            63.5f, 83.98f,
+            45.5f, 111.48f,
+            81.5f, 111.48f,
         };
-        float Weights[10] = {
-            1.0f,
-            1.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-        };*/
         ALGORITHMUTILS::CNormImage3pt affineNorm;
-        affineNorm.Initialize(184, 184, 0.78125);
+        affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
         
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
@@ -258,22 +251,24 @@ int main(int argc, char** argv)
         cv::split(oriImgData, mv);
 
         AutoArray<unsigned char> pNormImage5Pt(
-            184 * 184 * oriImgData.channels());
+            96 * 184 * oriImgData.channels());
 
         for (int j = 0; j < oriImgData.channels(); ++j) {
             int retValue = affineNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
                 oriImgData.cols, oriImgData.rows, feaPoints, 5,
-                pNormImage5Pt + j * 184 * 184);
+                pNormImage5Pt + j * 96 * 128);
             if (retValue != 0)
                 continue;
 
-            mv[j] = cv::Mat(184, 184, CV_8UC1, pNormImage5Pt + j * 184 * 184);
+            mv[j] = cv::Mat(128, 96, CV_8UC1, pNormImage5Pt + j * 96 * 128);
         }
 
         cv::Mat face_img;
         cv::merge(mv, face_img);
-        cv::Mat CropImage = face_img(cv::Rect(46, 12, 96, 128));
-        //cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
+        //cv::imwrite("D:/project/caffe-windows/Build/x64/test_face.jpg", face_img);
+        cv::Mat CropImage = face_img;
+        cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
+
 
         AutoArray<unsigned char> pCropNormFace(96 * 128 * 3);
 
@@ -300,9 +295,10 @@ int main(int argc, char** argv)
 
         // º∆À„ƒÍ¡‰
         int age = 0;
-        for (int c = 2; c < featDim; ++c)
+        int iter = (featDim - 2) / 2;
+        for (int c = 2; c < iter; ++c)
         {
-            if (pFeatures[2 * c] < pFeatures[2 * c + 1])
+            if (pFeatures[2 * c + 2] < pFeatures[2 * c + 3])
                 age++;
         }
         if (age <= 1)

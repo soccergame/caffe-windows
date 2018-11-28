@@ -15,9 +15,9 @@
 #include "caffe/caffe.hpp"
 #include "caffe/util/upgrade_proto.hpp"
 #include <boost/algorithm/string.hpp>
-#include "caffe/common/autoarray.h"
+#include "autoarray.h"
 #include "caffe/face_beauty/face_beauty.h"
-#include "caffe/common/AlgorithmUtils.h"
+#include "AlgorithmUtils.h"
 
 using caffe::Blob;
 using caffe::Caffe;

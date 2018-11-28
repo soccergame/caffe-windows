@@ -1,6 +1,6 @@
 #include "caffe/face_detection/face_detection.hpp"
-#include "caffe/common/autoarray.h"
-#include "caffe/common/NormFaceImage.h"
+#include "autoarray.h"
+#include "NormFaceImage.h"
 #ifdef _WIN32
 #include <io.h>
 #else

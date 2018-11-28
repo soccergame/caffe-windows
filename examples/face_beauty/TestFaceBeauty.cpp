@@ -1,7 +1,7 @@
 #include "caffe/face_beauty/face_beauty.h"
 #include "caffe/face_detection/face_detection.hpp"
-#include "caffe/common/autoarray.h"
-#include "caffe/common/NormFaceImage.h"
+#include "autoarray.h"
+#include "NormFaceImage.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -259,7 +259,7 @@ int main(int argc, char** argv)
         cv::split(oriImgData, mv);
 
         AutoArray<unsigned char> pNormImage5Pt(
-            300 * 300 * oriImgData.channels());
+            256 * 256 * oriImgData.channels());
 
         for (int j = 0; j < oriImgData.channels(); ++j) {
             int retValue = affineNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
