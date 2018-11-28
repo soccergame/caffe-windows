@@ -273,28 +273,9 @@ int main(int argc, char** argv)
         cv::Mat face_img;
         cv::merge(mv, face_img);
         cv::Mat CropImage = face_img(cv::Rect(46, 12, 96, 128));
-        cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
-
-        /*nRetCode = NormalizeFace(oriImgData.data, oriImgData.cols, oriImgData.rows, oriImgData.channels(), FeaPoints, NormPoint,
-            weight, 88, 300, 300, pDstImage);
-        if (ERR_NONE != nRetCode)
-        {
-            std::cout << "Failed to normalize faces!" << std::endl;
-            throw nRetCode;
-        }*/
-        
-        //smart_ptr<unsigned char> pNormFace(300 * 300 * 3);
-        //for (int p = 0; p < 300 * 300 * 3; ++p)
-        //    pNormFace[p] = (unsigned char)(int(pDstImage[p]));
+        //cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
 
         AutoArray<unsigned char> pCropNormFace(96 * 128 * 3);
-        //AutoArray<unsigned char> pCropGrayNormFace(256 * 256);
-
-        ////cv::Mat NormFaceImage(300, 300, CV_8UC3, pNormFace);
-        //cv::Rect roi(22, 22, 256, 256);
-        //cv::Mat CropImage = face_img(roi);
-        //cv::Mat GrayCropImage;
-        //cv::cvtColor(CropImage, GrayCropImage, cv::COLOR_BGR2GRAY);
 
         const int ori_size = CropImage.rows * CropImage.cols;
         for (int h = 0; h < CropImage.rows; ++h) {
@@ -305,28 +286,6 @@ int main(int argc, char** argv)
                 }
             }
         }
-
-        /*for (int h = 0; h < CropImage.rows; ++h) {
-            const uchar* ptr = CropImage.ptr<uchar>(h);
-            int img_index = 0;
-            for (int w = 0; w < CropImage.cols; ++w) {
-                for (int c = 0; c < CropImage.channels(); ++c) {
-                    int datum_index = (c * CropImage.rows + h) * CropImage.cols + w;
-                    pCropNormFace[datum_index] = static_cast<char>(ptr[img_index++]);
-                }
-            }
-        }*/
-
-        /*for (int h = 0; h < GrayCropImage.rows; ++h) {
-            const uchar* ptr = GrayCropImage.ptr<uchar>(h);
-            int img_index = 0;
-            for (int w = 0; w < GrayCropImage.cols; ++w) {
-                for (int c = 0; c < GrayCropImage.channels(); ++c) {
-                    int datum_index = (c * GrayCropImage.rows + h) * GrayCropImage.cols + w;
-                    pCropGrayNormFace[datum_index] = static_cast<char>(ptr[img_index++]);
-                }
-            }
-        }*/
         
         // 1¡¢×ÜÌå·Ö
         int featDim = GetFaceGenderSize(hGender) / 4;
