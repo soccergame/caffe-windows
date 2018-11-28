@@ -203,12 +203,10 @@ int main(int argc, char** argv)
         int gpuId = atoi(argv[3]);
 
         // Initialize        
-        retValue = SetDeepFeatLibPath(pModulePath);
+        retValue = SetFaceGenderLibPath(pModulePath);
         
-        BeautyHandle hFace, hAge, hSkin, hXiaci, hHappy;
-        retValue |= InitDeepFeat("deploy_shufflenet_faceAttributes.prototxt",
-            "shufflenet_FaceAtrributes_and_emotion_lr_0.0001_iter_320000.caffemodel", gpuId, &hFace);
-        //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
+        BeautyHandle hGender;
+        retValue |= InitFaceGender("libsnfg.so", gpuId, &hGender);
         if (0 != retValue)
             throw retValue;
 
@@ -217,7 +215,7 @@ int main(int argc, char** argv)
         MTCNN fd_mtcnn(gpuId);
         retValue = LoadModel(pModulePath, fd_mtcnn);
         if (0 != retValue) {
-            UninitDeepFeat(hFace);
+            UninitFaceGender(hGender);
             //UninitDeepFeat(hAge);
             throw retValue;
         }  
@@ -331,9 +329,9 @@ int main(int argc, char** argv)
         }*/
         
         // 1、总体分
-        int featDim = GetDeepFeatSize(hFace) / 4;
+        int featDim = GetFaceGenderSize(hGender) / 4;
         AutoArray<float> pFeatures(featDim);
-        retValue = InnerDeepFeat(hFace, pCropNormFace, 1, 3, 128, 96, pFeatures);
+        retValue = InnerFaceGender(hGender, pCropNormFace, 1, 3, 128, 96, pFeatures);
 
         // 计算性别
         if (pFeatures[0] > pFeatures[1])
@@ -393,121 +391,37 @@ int main(int argc, char** argv)
                     continue;
             }
 
-            int featDim = GetDeepFeatSize(hFace) / 4;
+            int featDim = GetFaceGenderSize(hGender) / 4;
             AutoArray<float> pFeatures(featDim);
-            retValue = InnerDeepFeat(hFace, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
+            retValue = InnerFaceGender(
+                hGender, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
 
-            float score = pFeatures[0] * 1.11f;
-            if (score > 100.0f)
-                score = 100.0f;
+            // 计算性别
+            if (pFeatures[0] > pFeatures[1])
+                std::cout << "Gender: female" << std::endl;
+            else
+                std::cout << "Gender: male" << std::endl;
 
-            std::cout << imgList[l] << " score: " << score << std::endl;
+            // 计算年龄
+            int age = 0;
+            for (int c = 2; c < featDim; ++c)
+            {
+                if (pFeatures[2 * c] < pFeatures[2 * c + 1])
+                    age++;
+            }
+            if (age <= 1)
+                std::cout << "child" << std::endl;
+            else if (age <= 20)
+                std::cout << "Younth" << std::endl;
+            else if (age <= 30)
+                std::cout << "junior middle" << std::endl;
+            else if (age < 46)
+                std::cout << "senior middle" << std::endl;
+            else if (age >= 46)
+                std::cout << "old" << std::endl;
         }
 #endif
-        
-        //// 2、瑕疵
-        //featDim = GetDeepFeatSize(hXiaci) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hXiaci, pCropNormFace, 1, 3, 256, 256, pFeatures);
-
-        //float maxR = -10000.0f;
-        //int label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-
-        //if (0 == label)
-        //    std::cout << "The flaws' number: " << "none!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "The flaws' number: " << "a little!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "The flaws' number: " << "small!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "The flaws' number: " << "a lot!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "The flaws' number: " << "very much!" << std::endl;
-
-        //// 3、开心
-        //featDim = GetDeepFeatSize(hHappy) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hHappy, pCropNormFace, 1, 3, 256, 256, pFeatures);
-
-        //maxR = -10000.0f;
-        //label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-        //// std::cout << std::endl;
-
-        //if (0 == label)
-        //    std::cout << "Angry!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "Unhappy!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "normal!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "happy!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "smile!" << std::endl;
-
-        // 4、年龄
-        //featDim = GetDeepFeatSize(hAge) / 4;
-        //pFeatures.resize(featDim);
-        //retValue = InnerDeepFeat(hAge, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
-    
-        //maxR = -10000.0f;
-        //label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-        //if (0 == label)
-        //    std::cout << "小孩!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "少年!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "青年!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "中年!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "老年!" << std::endl;
-        // std::cout << std::endl;
-
-        //// 5、肤色
-        //featDim = GetDeepFeatSize(hSkin) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hSkin, pCropNormFace, 1, 3, 256, 256, pFeatures);
-
-        //score = pFeatures[0] * 1.11f;
-        //if (score > 100.0f)
-        //    score = 100.0f;    
-        //std::cout << "Skin score: " << score << std::endl;
-        
-        // Uninitialized
-        //FaceDetectUninit();
-        //FaceAlignmentUninit();
-        UninitDeepFeat(hFace);
-        //UninitDeepFeat(hSkin);
-        //UninitDeepFeat(hXiaci);
-        //UninitDeepFeat(hHappy);
-        //UninitDeepFeat(hAge);
+        UninitFaceGender(hGender);
     }
     catch (const std::bad_alloc &)
 	{

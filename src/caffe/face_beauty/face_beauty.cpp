@@ -31,28 +31,12 @@ using caffe::vector;
 #define _MAX_PATH 260
 #endif
 
-char g_szDeepFeatSDKPath[_MAX_PATH] = {0};
-
 namespace
 {
-	//// for imagenet, normalize image size is 224 * 224
-	//// const float g_scale = 224.0f / 128.0f;
-	//const float g_scale = 1.0f;// 224.0f / 128.0f;	// normal image resized to 128 * 128 , 
-	//const int g_shiftBits = 11;
-	//// rotate shift right by moves bits
-	//template<typename T> T ror(T x, unsigned int moves)
-	//{
-	//	return (x >> moves) | (x << (sizeof(T) * 8 - moves));
-	//}
-
-	//// rotate shift left by moves bits
-	//template<typename T> T rol(T x, unsigned int moves)
-	//{
-	//	return (x << moves) | (x >> (sizeof(T) * 8 - moves));
-	//}
+    char g_szFaceBeautySDKPath[_MAX_PATH] = { 0 };
 }
 
-int __stdcall InnerDeepFeat(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
+int __stdcall InnerFaceBeauty(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
     int imageHeight, int imageWidth, float *pFeatures)
 {
     int nRet = 0;
@@ -112,33 +96,34 @@ int __stdcall InnerDeepFeat(BeautyHandle handle, const unsigned char *pNormImage
 }
 
 
-int __stdcall SetDeepFeatLibPath(const char *szLibPath)
+int __stdcall SetFaceBeautyLibPath(const char *szLibPath)
 {
 	if (szLibPath == NULL)
 		return -1;
 
 #ifdef _WIN32
-	strcpy_s(g_szDeepFeatSDKPath, _MAX_PATH, szLibPath);
+	strcpy_s(g_szFaceBeautySDKPath, _MAX_PATH, szLibPath);
 #else
     strncpy(g_szDeepFeatSDKPath, szLibPath, _MAX_PATH);
 #endif
 	
-	size_t len = strlen(g_szDeepFeatSDKPath);
+	size_t len = strlen(g_szFaceBeautySDKPath);
 	if (len != 0)
 	{
 	#ifdef _WIN32
-		if (g_szDeepFeatSDKPath[len - 1] != '\\')
-			strcat_s(g_szDeepFeatSDKPath, "\\");
+		if (g_szFaceBeautySDKPath[len - 1] != '\\')
+			strcat_s(g_szFaceBeautySDKPath, "\\");
 	#else
-	    if (g_szDeepFeatSDKPath[len - 1] != '/')
-	        strncat(g_szDeepFeatSDKPath, "/", _MAX_PATH);
+	    if (g_szFaceBeautySDKPath[len - 1] != '/')
+	        strncat(g_szFaceBeautySDKPath, "/", _MAX_PATH);
 	#endif
 	}
 
 	return 0;
 }
 
-int __stdcall InitDeepFeat(const char *szResName, int gpuID, BeautyHandle *pHandle)
+int __stdcall InitFaceBeauty(const char *szResName, int gpuID, 
+    BeautyHandle *pHandle)
 {
 	if (pHandle == NULL)
 		return -1;
@@ -150,14 +135,14 @@ int __stdcall InitDeepFeat(const char *szResName, int gpuID, BeautyHandle *pHand
 	int retValue = 0;
 
 #ifndef _WIN32	
-	if (strlen(g_szDeepFeatSDKPath) == 0)
-		strncpy(g_szDeepFeatSDKPath, "./", _MAX_PATH);
+	if (strlen(g_szFaceBeautySDKPath) == 0)
+		strncpy(g_szFaceBeautySDKPath, "./", _MAX_PATH);
 #endif
 
 	try
 	{
 		std::string strDllPath;
-		strDllPath = g_szDeepFeatSDKPath;
+		strDllPath = g_szFaceBeautySDKPath;
         strDllPath += szResName;
 
         std::fstream fileModel;
@@ -244,7 +229,7 @@ int __stdcall InitDeepFeat(const char *szResName, int gpuID, BeautyHandle *pHand
 	return retValue;
 }
 
-int __stdcall UninitDeepFeat(BeautyHandle handle)
+int __stdcall UninitFaceBeauty(BeautyHandle handle)
 {
 	Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
 	delete pCaffeNet;
@@ -252,7 +237,7 @@ int __stdcall UninitDeepFeat(BeautyHandle handle)
 	return 0;
 }
 
-int __stdcall GetDeepFeatSize(BeautyHandle handle)
+int __stdcall GetFaceBeautySize(BeautyHandle handle)
 {
 	Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
 	const vector<Blob<float>*>& result = pCaffeNet->output_blobs();

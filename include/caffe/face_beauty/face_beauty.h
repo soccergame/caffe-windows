@@ -19,28 +19,29 @@ extern "C"
 	 *		\param[in] szLibPath library path name
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall SetDeepFeatLibPath(const char *szLibPath);
+	int __stdcall SetFaceBeautyLibPath(const char *szLibPath);
 
 	/**
 	 *	\brief initialize deep face feature extraction sdk	 
 	 *	\return int error code defined in THIDErrorDef.h	 
 	 */
-    int __stdcall InitDeepFeat(const char *szResName, int gpuId, BeautyHandle *pHandle);
+    int __stdcall InitFaceBeauty(const char *szResName, int gpuId,
+        BeautyHandle *pHandle);
 	
 
 	/**
 	 *	\brief free deep face feature extraction sdk
 	 *	\return int error code defined in THIDErrorDef.h
 	 */
-	int __stdcall UninitDeepFeat(BeautyHandle handle);
+	int __stdcall UninitFaceBeauty(BeautyHandle handle);
 
 	/**
 	 *	\brief get deep face feature size in bytes
 	 *	\return int face feature size in bytes
 	 */
-    int __stdcall GetDeepFeatSize(BeautyHandle handle);
+    int __stdcall GetFaceBeautySize(BeautyHandle handle);
 
-    int __stdcall InnerDeepFeat(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
+    int __stdcall InnerFaceBeauty(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
         int imageHeight, int imageWidth, float *pFeatures);
 #ifdef __cplusplus
 }

@@ -31,7 +31,7 @@ using caffe::vector;
 #define _MAX_PATH 260
 #endif
 
-char g_szDeepFeatSDKPath[_MAX_PATH] = {0};
+char g_szFaceGenderSDKPath[_MAX_PATH] = {0};
 
 namespace
 {
@@ -52,7 +52,7 @@ namespace
 	//}
 }
 
-int __stdcall InnerDeepFeat(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
+int __stdcall InnerFaceGender(BeautyHandle handle, const unsigned char *pNormImage, int batchSize, int channels,
     int imageHeight, int imageWidth, float *pFeatures)
 {
     int nRet = 0;
@@ -112,94 +112,93 @@ int __stdcall InnerDeepFeat(BeautyHandle handle, const unsigned char *pNormImage
 }
 
 
-int __stdcall SetDeepFeatLibPath(const char *szLibPath)
+int __stdcall SetFaceGenderLibPath(const char *szLibPath)
 {
 	if (szLibPath == NULL)
 		return -1;
 
 #ifdef _WIN32
-	strcpy_s(g_szDeepFeatSDKPath, _MAX_PATH, szLibPath);
+	strcpy_s(g_szFaceGenderSDKPath, _MAX_PATH, szLibPath);
 #else
-    strncpy(g_szDeepFeatSDKPath, szLibPath, _MAX_PATH);
+    strncpy(g_szFaceGenderSDKPath, szLibPath, _MAX_PATH);
 #endif
 	
-	size_t len = strlen(g_szDeepFeatSDKPath);
+	size_t len = strlen(g_szFaceGenderSDKPath);
 	if (len != 0)
 	{
 	#ifdef _WIN32
-		if (g_szDeepFeatSDKPath[len - 1] != '\\')
-			strcat_s(g_szDeepFeatSDKPath, "\\");
+		if (g_szFaceGenderSDKPath[len - 1] != '\\')
+			strcat_s(g_szFaceGenderSDKPath, "\\");
 	#else
-	    if (g_szDeepFeatSDKPath[len - 1] != '/')
-	        strncat(g_szDeepFeatSDKPath, "/", _MAX_PATH);
+	    if (g_szFaceGenderSDKPath[len - 1] != '/')
+	        strncat(g_szFaceGenderSDKPath, "/", _MAX_PATH);
 	#endif
 	}
 
 	return 0;
 }
 
-int __stdcall InitDeepFeat(const char *szResName, 
-    const char *szWeightName, int gpuID, BeautyHandle *pHandle)
+int __stdcall InitFaceGender(const char *szResName, int gpuID, BeautyHandle *pHandle)
 {
-	if (pHandle == NULL)
-		return -1;
-	
-	// initialize deep face network
-	*pHandle = NULL;
-	std::locale::global(std::locale(""));
+    if (pHandle == NULL)
+        return -1;
 
-	int retValue = 0;
+    // initialize deep face network
+    *pHandle = NULL;
+    std::locale::global(std::locale(""));
+
+    int retValue = 0;
 
 #ifndef _WIN32	
-	if (strlen(g_szDeepFeatSDKPath) == 0)
-		strncpy(g_szDeepFeatSDKPath, "./", _MAX_PATH);
+    if (strlen(g_szFaceGenderSDKPath) == 0)
+        strncpy(g_szFaceGenderSDKPath, "./", _MAX_PATH);
 #endif
 
-	try
-	{
-		std::string strDllPath;
-		strDllPath = g_szDeepFeatSDKPath;
+    try
+    {
+        std::string strDllPath;
+        strDllPath = g_szFaceGenderSDKPath;
         strDllPath += szResName;
 
-  //      std::fstream fileModel;
-  //      fileModel.open(strDllPath.c_str(), std::fstream::in | std::fstream::binary);
-  //      if (false == fileModel.is_open())
-  //        return 1;
-  //        
-  //      fileModel.seekg(0, std::fstream::end);
-  //      int dataSize = int(fileModel.tellg());
-  //      fileModel.seekg(0, std::fstream::beg);
-  //     
-		////CMyFile fileModel(strDllPath.c_str(), CMyFile::modeRead);
-		////int dataSize = static_cast<int>(fileModel.GetLength());
-		//AutoArray<char> encryptedData(dataSize);
-		////fileModel.Read(encryptedData, dataSize);
-		//fileModel.read(encryptedData, dataSize);
-		////fileModel.Close();
-		//fileModel.close();
+        std::fstream fileModel;
+        fileModel.open(strDllPath.c_str(), std::fstream::in | std::fstream::binary);
+        if (false == fileModel.is_open())
+            return 1;
 
-		//int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
-		//// encrypt data by shift left		
-		//int numOfData = dataSize / sizeof(pBuffer[0]);
-		//for (int i = 0; i < numOfData; ++i)
-		//{
-		//	int tempData = pBuffer[i];
-		//	pBuffer[i] = brc_sn::ror(static_cast<unsigned int>(tempData), 
-  //              brc_sn::g_shiftBits);
-		//}
+        fileModel.seekg(0, std::fstream::end);
+        int dataSize = int(fileModel.tellg());
+        fileModel.seekg(0, std::fstream::beg);
 
-  //      const int modelnumber = pBuffer[0];
-  //      std::vector<int> protoTxtLen, modelSize;
-  //      for (int i = 0; i < modelnumber; ++i)
-  //      {
-  //          protoTxtLen.push_back(pBuffer[2 * i + 1]);
-  //          modelSize.push_back(pBuffer[2 * i + 2]);
-  //      }
-  //      unsigned char *pDataBuf = reinterpret_cast<unsigned char *>(encryptedData.begin()) + sizeof(int) * (2 * modelnumber + 1);
+        //CMyFile fileModel(strDllPath.c_str(), CMyFile::modeRead);
+        //int dataSize = static_cast<int>(fileModel.GetLength());
+        AutoArray<char> encryptedData(dataSize);
+        //fileModel.Read(encryptedData, dataSize);
+        fileModel.read(encryptedData, dataSize);
+        //fileModel.Close();
+        fileModel.close();
 
-		FLAGS_minloglevel = 2;	// INFO(=0)<WARNING(=1)<ERROR(=2)<FATAL(=3)
+        int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
+        // encrypt data by shift left		
+        int numOfData = dataSize / sizeof(pBuffer[0]);
+        for (int i = 0; i < numOfData; ++i)
+        {
+            int tempData = pBuffer[i];
+            pBuffer[i] = brc_sn::ror(static_cast<unsigned int>(tempData),
+                brc_sn::g_shiftBits);
+        }
 
-		// initialize network structure
+        const int modelnumber = pBuffer[0];
+        std::vector<int> protoTxtLen, modelSize;
+        for (int i = 0; i < modelnumber; ++i)
+        {
+            protoTxtLen.push_back(pBuffer[2 * i + 1]);
+            modelSize.push_back(pBuffer[2 * i + 2]);
+        }
+        unsigned char *pDataBuf = reinterpret_cast<unsigned char *>(encryptedData.begin()) + sizeof(int) * (2 * modelnumber + 1);
+
+        FLAGS_minloglevel = 2;	// INFO(=0)<WARNING(=1)<ERROR(=2)<FATAL(=3)
+
+                                // initialize network structure
 #ifdef CPU_ONLY
         Caffe::set_mode(Caffe::CPU);
 #else
@@ -210,45 +209,42 @@ int __stdcall InitDeepFeat(const char *szResName,
             Caffe::SetDevice(gpuID);
         }
 #endif
-		caffe::NetParameter net_param;
+        caffe::NetParameter net_param;
         caffe::NetParameter weight_param;
 
-        caffe::ReadNetParamsFromTextFileOrDie(strDllPath, &net_param);
-            //pDataBuf, protoTxtLen[0], &net_param);
+        retValue = caffe::ReatNetParamsFromBuffer(
+            pDataBuf, protoTxtLen[0], &net_param);
         CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
         CHECK(caffe::UpgradeNetAsNeeded("<memory>", &net_param));
-
-        strDllPath = g_szDeepFeatSDKPath;
-        strDllPath += szWeightName;
-        caffe::ReadProtoFromBinaryFileOrDie(strDllPath, &weight_param);
-            //pDataBuf + protoTxtLen[0], modelSize[0], &weight_param);
+        retValue = caffe::ReatNetParamsFromBuffer(
+            pDataBuf + protoTxtLen[0], modelSize[0], &weight_param);
         CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
         CHECK(caffe::UpgradeNetAsNeeded("<memory>", &weight_param));
 
         net_param.mutable_state()->set_phase(caffe::TEST);
-		Net<float> *pCaffeNet = new Net<float>(net_param);
+        Net<float> *pCaffeNet = new Net<float>(net_param);
 
-		// initialize network parameters		
-		pCaffeNet->CopyTrainedLayersFrom(weight_param);
-		*pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
-	}
-	catch (const std::bad_alloc &)
-	{
-		retValue = -2;
-	}
-	catch (const int &errCode)
-	{
-		retValue = errCode;
-	}
-	catch (...)
-	{
-		retValue = -3;
-	}
+        // initialize network parameters		
+        pCaffeNet->CopyTrainedLayersFrom(weight_param);
+        *pHandle = reinterpret_cast<BeautyHandle>(pCaffeNet);
+    }
+    catch (const std::bad_alloc &)
+    {
+        retValue = -2;
+    }
+    catch (const int &errCode)
+    {
+        retValue = errCode;
+    }
+    catch (...)
+    {
+        retValue = -3;
+    }
 
-	return retValue;
+    return retValue;
 }
 
-int __stdcall UninitDeepFeat(BeautyHandle handle)
+int __stdcall UninitFaceGender(BeautyHandle handle)
 {
 	Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
 	delete pCaffeNet;
@@ -256,7 +252,7 @@ int __stdcall UninitDeepFeat(BeautyHandle handle)
 	return 0;
 }
 
-int __stdcall GetDeepFeatSize(BeautyHandle handle)
+int __stdcall GetFaceGenderSize(BeautyHandle handle)
 {
 	Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
 	const vector<Blob<float>*>& result = pCaffeNet->output_blobs();

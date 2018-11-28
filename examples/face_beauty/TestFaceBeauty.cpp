@@ -203,10 +203,10 @@ int main(int argc, char** argv)
         int gpuId = atoi(argv[3]);
 
         // Initialize        
-        retValue = SetDeepFeatLibPath(pModulePath);
+        retValue = SetFaceBeautyLibPath(pModulePath);
         
         BeautyHandle hFace, hAge, hSkin, hXiaci, hHappy;
-        retValue |= InitDeepFeat("libsnfb.so", gpuId, &hFace);
+        retValue |= InitFaceBeauty("libsnfb.so", gpuId, &hFace);
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue)
             throw retValue;
@@ -216,7 +216,7 @@ int main(int argc, char** argv)
         MTCNN fd_mtcnn(gpuId);
         retValue = LoadModel(pModulePath, fd_mtcnn);
         if (0 != retValue) {
-            UninitDeepFeat(hFace);
+            UninitFaceBeauty(hFace);
             //UninitDeepFeat(hAge);
             throw retValue;
         }  
@@ -267,60 +267,12 @@ int main(int argc, char** argv)
                 pNormImage5Pt + j * 256 * 256);
             if (retValue != 0)
                 continue;
-
-            //mv[j] = cv::Mat(300, 300, CV_8UC1, pNormImage5Pt + j * 300 * 300);
         }
-
-        /*cv::Mat face_img;
-        cv::merge(mv, face_img);*/
-
-        /*nRetCode = NormalizeFace(oriImgData.data, oriImgData.cols, oriImgData.rows, oriImgData.channels(), FeaPoints, NormPoint,
-            weight, 88, 300, 300, pDstImage);
-        if (ERR_NONE != nRetCode)
-        {
-            std::cout << "Failed to normalize faces!" << std::endl;
-            throw nRetCode;
-        }*/
-        
-        //smart_ptr<unsigned char> pNormFace(300 * 300 * 3);
-        //for (int p = 0; p < 300 * 300 * 3; ++p)
-        //    pNormFace[p] = (unsigned char)(int(pDstImage[p]));
-
-        //AutoArray<unsigned char> pCropNormFace(256 * 256 * 3);
-        //AutoArray<unsigned char> pCropGrayNormFace(256 * 256);
-
-        ////cv::Mat NormFaceImage(300, 300, CV_8UC3, pNormFace);
-        //cv::Rect roi(22, 22, 256, 256);
-        //cv::Mat CropImage = face_img(roi);
-        //cv::Mat GrayCropImage;
-        //cv::cvtColor(CropImage, GrayCropImage, cv::COLOR_BGR2GRAY);
-
-        /*for (int h = 0; h < CropImage.rows; ++h) {
-            const uchar* ptr = CropImage.ptr<uchar>(h);
-            int img_index = 0;
-            for (int w = 0; w < CropImage.cols; ++w) {
-                for (int c = 0; c < CropImage.channels(); ++c) {
-                    int datum_index = (c * CropImage.rows + h) * CropImage.cols + w;
-                    pCropNormFace[datum_index] = static_cast<char>(ptr[img_index++]);
-                }
-            }
-        }*/
-
-        /*for (int h = 0; h < GrayCropImage.rows; ++h) {
-            const uchar* ptr = GrayCropImage.ptr<uchar>(h);
-            int img_index = 0;
-            for (int w = 0; w < GrayCropImage.cols; ++w) {
-                for (int c = 0; c < GrayCropImage.channels(); ++c) {
-                    int datum_index = (c * GrayCropImage.rows + h) * GrayCropImage.cols + w;
-                    pCropGrayNormFace[datum_index] = static_cast<char>(ptr[img_index++]);
-                }
-            }
-        }*/
         
         // 1、总体分
-        int featDim = GetDeepFeatSize(hFace) / 4;
+        int featDim = GetFaceBeautySize(hFace) / 4;
         AutoArray<float> pFeatures(featDim);
-        retValue = InnerDeepFeat(hFace, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
+        retValue = InnerFaceBeauty(hFace, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
 
         float score = pFeatures[0] * 1.11f;
         if (score > 100.0f)
@@ -362,9 +314,10 @@ int main(int argc, char** argv)
                     continue;
             }
 
-            int featDim = GetDeepFeatSize(hFace) / 4;
+            int featDim = GetFaceBeautySize(hFace) / 4;
             AutoArray<float> pFeatures(featDim);
-            retValue = InnerDeepFeat(hFace, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
+            retValue = InnerFaceBeauty(
+                hFace, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
 
             float score = pFeatures[0] * 1.11f;
             if (score > 100.0f)
@@ -373,110 +326,8 @@ int main(int argc, char** argv)
             std::cout << imgList[l] << " score: " << score << std::endl;
         }
 #endif
-        
-        //// 2、瑕疵
-        //featDim = GetDeepFeatSize(hXiaci) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hXiaci, pCropNormFace, 1, 3, 256, 256, pFeatures);
 
-        //float maxR = -10000.0f;
-        //int label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-
-        //if (0 == label)
-        //    std::cout << "The flaws' number: " << "none!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "The flaws' number: " << "a little!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "The flaws' number: " << "small!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "The flaws' number: " << "a lot!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "The flaws' number: " << "very much!" << std::endl;
-
-        //// 3、开心
-        //featDim = GetDeepFeatSize(hHappy) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hHappy, pCropNormFace, 1, 3, 256, 256, pFeatures);
-
-        //maxR = -10000.0f;
-        //label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-        //// std::cout << std::endl;
-
-        //if (0 == label)
-        //    std::cout << "Angry!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "Unhappy!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "normal!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "happy!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "smile!" << std::endl;
-
-        // 4、年龄
-        //featDim = GetDeepFeatSize(hAge) / 4;
-        //pFeatures.resize(featDim);
-        //retValue = InnerDeepFeat(hAge, pNormImage5Pt, 1, 3, 256, 256, pFeatures);
-    
-        //maxR = -10000.0f;
-        //label = 15;
-        //for (int j = 0; j < featDim; ++j)
-        //{
-        //    //std::cout << pFeatures[j] << " ";
-        //    if (maxR < pFeatures[j])
-        //    {
-        //        maxR = pFeatures[j];
-        //        label = j;
-        //    }
-        //}
-        //if (0 == label)
-        //    std::cout << "小孩!" << std::endl;
-        //else if (1 == label)
-        //    std::cout << "少年!" << std::endl;
-        //else if (2 == label)
-        //    std::cout << "青年!" << std::endl;
-        //else if (3 == label)
-        //    std::cout << "中年!" << std::endl;
-        //else if (4 == label)
-        //    std::cout << "老年!" << std::endl;
-        // std::cout << std::endl;
-
-        //// 5、肤色
-        //featDim = GetDeepFeatSize(hSkin) / 4;
-        //pFeatures.reset(featDim);
-        //nRetCode = InnerDeepFeat(hSkin, pCropNormFace, 1, 3, 256, 256, pFeatures);
-
-        //score = pFeatures[0] * 1.11f;
-        //if (score > 100.0f)
-        //    score = 100.0f;    
-        //std::cout << "Skin score: " << score << std::endl;
-        
-        // Uninitialized
-        //FaceDetectUninit();
-        //FaceAlignmentUninit();
-        UninitDeepFeat(hFace);
-        //UninitDeepFeat(hSkin);
-        //UninitDeepFeat(hXiaci);
-        //UninitDeepFeat(hHappy);
-        //UninitDeepFeat(hAge);
+        UninitFaceBeauty(hFace);
     }
     catch (const std::bad_alloc &)
 	{
