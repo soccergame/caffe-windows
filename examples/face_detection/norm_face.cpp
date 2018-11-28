@@ -1,6 +1,6 @@
 #include "caffe/face_detection/face_detection.hpp"
-#include "caffe/face_detection/autoarray.h"
-#include "caffe/face_detection/NormFaceImage.h"
+#include "caffe/common/autoarray.h"
+#include "caffe/common/NormFaceImage.h"
 #ifdef _WIN32
 #include <io.h>
 #else
@@ -312,8 +312,9 @@ int main(int argc, char **argv) {
     distEyeCMouthC = int(0.5 * (g_NormPoints[7] + g_NormPoints[9] - g_NormPoints[1] - g_NormPoints[3]) * norm_scale + 0.5);
     distEyeC = int((g_NormPoints[2] - g_NormPoints[0]) * norm_scale + 0.5);
 
-    THID::CAffineNormImage affineNorm;
-    affineNorm.Initialize(norm_size, norm_size, norm_scale, g_normTemplateSize, g_NormPoints, 5, THID::Bilinear);
+    ALGORITHMUTILS::CAffineNormImage affineNorm;
+    affineNorm.Initialize(norm_size, norm_size, norm_scale, 
+        g_normTemplateSize, g_NormPoints, 5, ALGORITHMUTILS::Bilinear);
 
     MTCNN::BoundingBox face_box;
 
