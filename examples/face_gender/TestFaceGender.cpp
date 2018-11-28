@@ -251,41 +251,41 @@ int main(int argc, char** argv)
         cv::split(oriImgData, mv);
 
         AutoArray<unsigned char> pNormImage5Pt(
-            96 * 184 * oriImgData.channels());
+            96 * 128 * oriImgData.channels());
 
         for (int j = 0; j < oriImgData.channels(); ++j) {
             int retValue = affineNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
                 oriImgData.cols, oriImgData.rows, feaPoints, 5,
-                pNormImage5Pt + j * 96 * 128);
+                pNormImage5Pt + (oriImgData.channels() - j -1) * 96 * 128);
             if (retValue != 0)
                 continue;
 
-            mv[j] = cv::Mat(128, 96, CV_8UC1, pNormImage5Pt + j * 96 * 128);
+            //mv[j] = cv::Mat(128, 96, CV_8UC1, pNormImage5Pt + j * 96 * 128);
         }
 
-        cv::Mat face_img;
-        cv::merge(mv, face_img);
-        //cv::imwrite("D:/project/caffe-windows/Build/x64/test_face.jpg", face_img);
-        cv::Mat CropImage = face_img;
-        cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
+        //cv::Mat face_img;
+        //cv::merge(mv, face_img);
+        ////cv::imwrite("D:/project/caffe-windows/Build/x64/test_face.jpg", face_img);
+        //cv::Mat CropImage = face_img;
+        //cv::imwrite("D:/project/caffe-windows/Build/x64/test.jpg", CropImage);
 
 
-        AutoArray<unsigned char> pCropNormFace(96 * 128 * 3);
+        //AutoArray<unsigned char> pCropNormFace(96 * 128 * 3);
 
-        const int ori_size = CropImage.rows * CropImage.cols;
-        for (int h = 0; h < CropImage.rows; ++h) {
-            for (int w = 0; w < CropImage.cols; ++w) {
-                for (int c = 0; c < CropImage.channels(); ++c) {
-                    pCropNormFace[c * ori_size + h * CropImage.cols + w] = 
-                        CropImage.at<cv::Vec3b>(h, w)[2 - c];
-                }
-            }
-        }
+        //const int ori_size = CropImage.rows * CropImage.cols;
+        //for (int h = 0; h < CropImage.rows; ++h) {
+        //    for (int w = 0; w < CropImage.cols; ++w) {
+        //        for (int c = 0; c < CropImage.channels(); ++c) {
+        //            pCropNormFace[c * ori_size + h * CropImage.cols + w] = 
+        //                CropImage.at<cv::Vec3b>(h, w)[2 - c];
+        //        }
+        //    }
+        //}
         
         // 1、总体分
         int featDim = GetFaceGenderSize(hGender) / 4;
         AutoArray<float> pFeatures(featDim);
-        retValue = InnerFaceGender(hGender, pCropNormFace, 1, 3, 128, 96, pFeatures);
+        retValue = InnerFaceGender(hGender, pNormImage5Pt, 1, 3, 128, 96, pFeatures);
 
         // 计算性别
         if (pFeatures[0] > pFeatures[1])
