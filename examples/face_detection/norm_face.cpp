@@ -312,9 +312,9 @@ int main(int argc, char **argv) {
     distEyeCMouthC = int(0.5 * (g_NormPoints[7] + g_NormPoints[9] - g_NormPoints[1] - g_NormPoints[3]) * norm_scale + 0.5);
     distEyeC = int((g_NormPoints[2] - g_NormPoints[0]) * norm_scale + 0.5);
 
-    ALGORITHMUTILS::CAffineNormImage affineNorm;
+    hzx::CAffineNormImage affineNorm;
     affineNorm.Initialize(norm_size, norm_size, norm_scale, 
-        g_normTemplateSize, g_NormPoints, 5, ALGORITHMUTILS::Bilinear);
+        g_normTemplateSize, g_NormPoints, 5, hzx::Bilinear);
 
     MTCNN::BoundingBox face_box;
 
