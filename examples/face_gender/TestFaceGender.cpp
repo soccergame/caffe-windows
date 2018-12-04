@@ -227,7 +227,7 @@ int main(int argc, char** argv)
             45.5f, 111.48f,
             81.5f, 111.48f,
         };
-        ALGORITHMUTILS::CNormImage3pt affineNorm;
+        hzx::CNormImage3pt affineNorm;
         affineNorm.Initialize(96, 128, 0.78125, 128, NormPoints_128);
         
         // Read Image
