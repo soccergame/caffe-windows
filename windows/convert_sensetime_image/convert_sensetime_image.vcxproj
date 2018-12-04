@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGUID>{44AAEF8E-2DF2-4534-AD6C-50017997897B}</ProjectGUID>
+    <ProjectGUID>{648EAAB6-2631-41A1-AA86-45BCD07D1A9A}</ProjectGUID>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
     <RootNamespace>convert_imageset</RootNamespace>
@@ -48,9 +48,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\tools\convert_imageset.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\libcaffe\libcaffe.vcxproj">
       <Project>{a9acef83-7b63-4574-a554-89ce869ea141}</Project>
       <Private>false</Private>
@@ -59,6 +56,9 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\convert_sensetime_image\convert_sensetime_image.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(SolutionDir)\CommonSettings.targets" />
