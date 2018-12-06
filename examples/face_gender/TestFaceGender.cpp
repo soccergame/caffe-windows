@@ -296,21 +296,19 @@ int main(int argc, char** argv)
         // 计算年龄
         int age = 0;
         int iter = (featDim - 2) / 2;
-        for (int c = 2; c < iter; ++c)
+        for (int c = 0; c < iter; ++c)
         {
             if (pFeatures[2 * c + 2] < pFeatures[2 * c + 3])
                 age++;
         }
-        if (age <= 1)
+        age += 16;
+        // 计算年龄
+        if (age <= 16)
             std::cout << "child" << std::endl;
-        else if (age <= 20)
-            std::cout << "Younth" << std::endl;
-        else if (age <= 30)
-            std::cout << "junior middle" << std::endl;
-        else if (age < 46)
-            std::cout << "senior middle" << std::endl;
-        else if (age >= 46)
+        else if (age >= 62)
             std::cout << "old" << std::endl;
+        else
+            std::cout << "Age: " << age << std::endl;
 #else
         char path_list[512] = { 0 };
         strcpy(path_list, strImgName.c_str());

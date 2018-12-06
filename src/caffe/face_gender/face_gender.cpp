@@ -183,8 +183,8 @@ int __stdcall InitFaceGender(const char *szResName, int gpuID, BeautyHandle *pHa
         for (int i = 0; i < numOfData; ++i)
         {
             int tempData = pBuffer[i];
-            pBuffer[i] = brc_sn::ror(static_cast<unsigned int>(tempData),
-                brc_sn::g_shiftBits);
+            pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
+                hzx::g_shiftBits);
         }
 
         const int modelnumber = pBuffer[0];

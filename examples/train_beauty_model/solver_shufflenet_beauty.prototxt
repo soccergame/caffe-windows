@@ -1,0 +1,19 @@
+#net: "train_test_shufflenet_faceAttributes.prototxt"
+net: "train_test_shufflenet_beauty.prototxt"
+test_iter: 405
+test_interval: 250
+display: 50
+
+#base_lr: 0.0001 #net: "train_test_shufflenet_faceAttributes.prototxt"
+base_lr: 0.001 #net: "train_test_shufflenet_faceAttributes_add_adjust_param.prototxt"
+momentum: 0.9
+weight_decay: 0.0005
+
+lr_policy: "step"
+stepsize: 1500000
+gamma: 0.9
+
+max_iter: 3000000
+snapshot: 250
+snapshot_prefix: "shufflenet_beauty_new"
+solver_mode: GPU

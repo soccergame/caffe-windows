@@ -68,9 +68,9 @@ int _tmain(int argc, TCHAR *argv[])
                 for (int j = 0; j < numOfData; ++j)
                 {
                     int tempData = pBuffer[j];
-                    pBuffer[j] = brc_sn::ror(
+                    pBuffer[j] = hzx::ror(
                         static_cast<unsigned int>(tempData),
-                        brc_sn::g_shiftBits);
+                        hzx::g_shiftBits);
                 }
 #ifndef OLD_VERSION
                 const int modelnumber = pBuffer[0];
@@ -252,7 +252,7 @@ int _tmain(int argc, TCHAR *argv[])
             for (int i = 0; i < numOfData; ++i)
             {
                 int tempData = pBuffer[i];
-                pBuffer[i] = brc_sn::rol(static_cast<unsigned int>(tempData), brc_sn::g_shiftBits);
+                pBuffer[i] = hzx::rol(static_cast<unsigned int>(tempData), hzx::g_shiftBits);
             }
 
             // write encrypted model file	
