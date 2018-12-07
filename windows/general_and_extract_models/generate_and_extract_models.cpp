@@ -44,6 +44,7 @@ int _tmain(int argc, TCHAR *argv[])
         vector<tstring> model_paths = modelPaths.getValue();
         CMyString result_dir = resultDir.getValue();
 
+
         if (is_extracted) {
             CMyString net_path, weight_path;
             std::vector<CMyString> model_names;
