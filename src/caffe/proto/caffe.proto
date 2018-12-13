@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 154 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 156 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -404,6 +404,7 @@ message LayerParameter {
   optional PowerParameter power_param = 122;
   optional PReLUParameter prelu_param = 131;
   optional PythonParameter python_param = 130;
+  optional RankHardLossParameter rank_hard_loss_param = 155;
   optional RecurrentParameter recurrent_param = 146;
   optional ReductionParameter reduction_param = 136;
   optional ReLUParameter relu_param = 123;
@@ -1130,6 +1131,21 @@ message PythonParameter {
   optional string param_str = 3 [default = ''];
   // DEPRECATED
   optional bool share_in_parallel = 4 [default = false];
+}
+
+// Message that stores parameters used by RankLossLayer
+// It's different from original rank hard loss and use cosine distance
+// to calculate triplets
+message RankHardLossParameter {
+  enum DistanceOp {
+    Euclidean = 0;
+	Cosine = 1;
+  }
+  optional uint32 neg_num = 1 [default = 4]; 
+  optional uint32 pair_size = 2 [default = 2]; 
+  optional float hard_ratio = 3 [default = 0.5];
+  optional DistanceOp dist_op = 4 [default = Euclidean];
+  optional float margin = 5 [default = 0.2];
 }
 
 // Message that stores parameters used by RecurrentLayer

@@ -123,6 +123,7 @@
     <ClCompile Include="..\..\src\caffe\test\test_power_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_protobuf.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_random_number_generator.cpp" />
+    <ClCompile Include="..\..\src\caffe\test\test_rank_hard_loss_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_reduction_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_reshape_layer.cpp" />
     <ClCompile Include="..\..\src\caffe\test\test_scale_layer.cpp" />
