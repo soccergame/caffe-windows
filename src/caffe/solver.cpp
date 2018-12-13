@@ -341,6 +341,17 @@ void Solver<Dtype>::Test(const int test_net_id) {
   vector<int> test_score_output_id;
   const shared_ptr<Net<Dtype> >& test_net = test_nets_[test_net_id];
   Dtype loss = 0;
+  int num_source_layers = test_net->layers().size();
+  for (int i = 0; i < num_source_layers; ++i) {
+      Layer<Dtype>* source_layer = test_net->layers()[i].get();
+      const string& source_layer_name = test_net->layer_names()[i];
+      if (0 == strcmp(source_layer_name.c_str(), "teacher1/classify1")) {
+          vector<shared_ptr<Blob<Dtype> > >& target_blobs = source_layer->blobs();
+          for (int j = 0; j < target_blobs.size(); ++j) {
+              LOG(INFO) << target_blobs[j]->cpu_data()[0];
+          }
+      }
+  }
   for (int i = 0; i < param_.test_iter(test_net_id); ++i) {
     SolverAction::Enum request = GetRequestedAction();
     // Check to see if stoppage of testing/training has been requested.

@@ -195,8 +195,8 @@ int main(int argc, char** argv)
         
     std::string strImgName = argv[2];
     int retValue = 0;
-    float maxR = 0;
-    int label = 0;
+    //float maxR = 0;
+    //int label = 0;
     
     try
     {
@@ -205,7 +205,7 @@ int main(int argc, char** argv)
         // Initialize        
         retValue = SetFaceBeautyLibPath(pModulePath);
         
-        BeautyHandle hFace, hAge, hSkin, hXiaci, hHappy;
+        BeautyHandle hFace;// , hAge, hSkin, hXiaci, hHappy;
         retValue |= InitFaceBeauty("libsnfb.so", gpuId, &hFace);
         //retValue |= InitDeepFeat("NNModel.dat", gpuId, &hAge);
         if (0 != retValue)
@@ -235,7 +235,7 @@ int main(int argc, char** argv)
             1.0f,
             1.0f,
         };
-        ALGORITHMUTILS::CNormImageSimilarity affineNorm;
+        hzx::CNormImageSimilarity affineNorm;
         affineNorm.Initialize(256, 256, 1.0, 300, NormPoints, Weights, 5);
         
         // Read Image

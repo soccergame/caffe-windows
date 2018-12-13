@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
     bool data_size_initialized = false;
 
     for (int line_id = 0; line_id < lines.size(); ++line_id) {
-        bool status;
+        //bool status;
         std::string enc = encode_type;
         if (encoded && !enc.size()) {
             // Guess the encoding type from the file name

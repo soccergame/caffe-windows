@@ -307,10 +307,10 @@ int main(int argc, char **argv) {
     int norm_size = atoi(argv[6]);
     float norm_scale = float(atof(argv[7]));
 
-    int eyeCenterY, distEyeCMouthC, distEyeC;
-    eyeCenterY = int(0.5 * ((g_NormPoints[1] + g_NormPoints[3]) * norm_scale + norm_size - g_normTemplateSize * norm_scale) + 0.5);
-    distEyeCMouthC = int(0.5 * (g_NormPoints[7] + g_NormPoints[9] - g_NormPoints[1] - g_NormPoints[3]) * norm_scale + 0.5);
-    distEyeC = int((g_NormPoints[2] - g_NormPoints[0]) * norm_scale + 0.5);
+    //int eyeCenterY, distEyeCMouthC, distEyeC;
+    //eyeCenterY = int(0.5 * ((g_NormPoints[1] + g_NormPoints[3]) * norm_scale + norm_size - g_normTemplateSize * norm_scale) + 0.5);
+    //distEyeCMouthC = int(0.5 * (g_NormPoints[7] + g_NormPoints[9] - g_NormPoints[1] - g_NormPoints[3]) * norm_scale + 0.5);
+    //distEyeC = int((g_NormPoints[2] - g_NormPoints[0]) * norm_scale + 0.5);
 
     hzx::CAffineNormImage affineNorm;
     affineNorm.Initialize(norm_size, norm_size, norm_scale, 

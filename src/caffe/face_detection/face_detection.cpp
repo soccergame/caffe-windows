@@ -495,7 +495,7 @@ namespace FaceDetection{
                 float y1 = globalFilterBoxes[i].y1 + globalFilterBoxes[i].dx1 * regh;
                 float x2 = globalFilterBoxes[i].x2 + globalFilterBoxes[i].dy2 * regw;
                 float y2 = globalFilterBoxes[i].y2 + globalFilterBoxes[i].dx2 * regh;
-                float score = globalFilterBoxes[i].score;
+                //float score = globalFilterBoxes[i].score;
                 float h = y2 - y1;
                 float w = x2 - x1;
                 float l = std::max(h, w);

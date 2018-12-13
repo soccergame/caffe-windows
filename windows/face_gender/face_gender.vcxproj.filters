@@ -19,4 +19,9 @@
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\caffe\face_gender\face_gender.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

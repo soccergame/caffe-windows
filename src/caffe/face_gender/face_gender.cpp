@@ -31,7 +31,10 @@ using caffe::vector;
 #define _MAX_PATH 260
 #endif
 
-char g_szFaceGenderSDKPath[_MAX_PATH] = {0};
+namespace {
+    char g_szFaceGenderSDKPath[_MAX_PATH] = { 0 };
+}
+
 
 namespace
 {

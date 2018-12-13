@@ -104,7 +104,7 @@ int __stdcall SetFaceBeautyLibPath(const char *szLibPath)
 #ifdef _WIN32
 	strcpy_s(g_szFaceBeautySDKPath, _MAX_PATH, szLibPath);
 #else
-    strncpy(g_szDeepFeatSDKPath, szLibPath, _MAX_PATH);
+    strncpy(g_szFaceBeautySDKPath, szLibPath, _MAX_PATH);
 #endif
 	
 	size_t len = strlen(g_szFaceBeautySDKPath);
@@ -168,8 +168,8 @@ int __stdcall InitFaceBeauty(const char *szResName, int gpuID,
 		for (int i = 0; i < numOfData; ++i)
 		{
 			int tempData = pBuffer[i];
-			pBuffer[i] = brc_sn::ror(static_cast<unsigned int>(tempData), 
-                brc_sn::g_shiftBits);
+			pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData), 
+                hzx::g_shiftBits);
 		}
 
         const int modelnumber = pBuffer[0];

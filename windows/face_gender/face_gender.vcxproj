@@ -74,6 +74,9 @@
     <ClCompile Include="..\..\src\caffe\face_detection\face_detection.cpp" />
     <ClCompile Include="..\..\src\caffe\face_gender\face_gender.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\caffe\face_gender\face_gender.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(SolutionDir)\CommonSettings.targets" />
 </Project>

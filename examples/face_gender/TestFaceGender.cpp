@@ -195,8 +195,8 @@ int main(int argc, char** argv)
         
     std::string strImgName = argv[2];
     int retValue = 0;
-    float maxR = 0;
-    int label = 0;
+    //float maxR = 0;
+    //int label = 0;
     
     try
     {
