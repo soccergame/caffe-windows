@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 156 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 157 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -392,6 +392,7 @@ message LayerParameter {
   optional InfogainLossParameter infogain_loss_param = 116;
   optional InnerProductParameter inner_product_param = 117;
   optional InputParameter input_param = 143;
+  optional LabelSpecificAddParameter label_specific_add_param = 156;
   optional LogParameter log_param = 134;
   optional LRNParameter lrn_param = 118;
   optional MAEParameter mae_param = 151;
@@ -457,7 +458,6 @@ message LayerParameter {
   optional ChannelScaleParameter channel_scale_param = 237;
   optional LabelSpecificAffineParameter label_specific_affine_param = 238;
   optional LabelSpecificHardMarginParameter label_specific_hard_margin_param = 239;
-  optional LabelSpecificAddParameter label_specific_add_param = 241;
   optional MILDataParameter mil_data_param = 242; //"MID"
   optional MILParameter mil_param = 243; //"MIL"
 }
