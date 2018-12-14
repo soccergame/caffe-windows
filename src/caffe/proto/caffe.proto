@@ -314,7 +314,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 157 (last added: recurrent_param)
+// LayerParameter next available layer-specific ID: 158 (last added: recurrent_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -376,6 +376,7 @@ message LayerParameter {
   optional ConcatParameter concat_param = 104;
   optional ContrastiveLossParameter contrastive_loss_param = 105;
   optional ConvolutionParameter convolution_param = 106;
+  optional CosinAddmParameter cosin_add_m_param = 157;
   optional CropParameter crop_param = 144;
   optional DataParameter data_param = 107;
   optional DropoutParameter dropout_param = 108;
@@ -398,7 +399,7 @@ message LayerParameter {
   optional MAEParameter mae_param = 151;
   optional MemoryDataParameter memory_data_param = 119;
   optional MVNParameter mvn_param = 120;
-  optional NormalizeParameter norm_param = 153;
+  optional NormalizeParameter normalize_param = 153;
   optional OrdinalRegressionParameter ordinal_regression_loss_param = 150;
   optional ParameterParameter parameter_param = 145;
   optional PoolingParameter pooling_param = 121;
@@ -761,6 +762,11 @@ message ConvolutionParameter {
   //Specifies which cudnn routine should be used to find the best convolution algorithm
   optional CuDNNConvolutionAlgorithmSeeker cudnn_convolution_algo_seeker = 19 [default = FINDEX];
   repeated uint32 shape_offset = 20;
+}
+
+message CosinAddmParameter {
+  optional float m = 1 [default = 0.5];
+  optional bool transform_test = 2 [default = false];
 }
 
 message CropParameter {
@@ -1839,13 +1845,9 @@ message FlipParameter {
 
 // Message that stores parameters used by NormalizeLayer
 message NormalizeParameter {
-  optional bool across_spatial = 1 [default = true];
-  // Initial value of scale. Default is 1.0 for all
-  optional FillerParameter scale_filler = 2;
-  // Whether or not scale parameters are shared across channels.
-  optional bool channel_shared = 3 [default = true];
-  // Epsilon for not dividing by zero while normalizing variance
-  optional float eps = 4 [default = 1e-10];
+  optional string normalize_type = 1 [default = "L2"];
+  optional bool fix_gradient = 2 [default = false];
+  optional bool bp_norm = 3 [default = false];
 }
 
 message GeneralContrastiveParameter {
