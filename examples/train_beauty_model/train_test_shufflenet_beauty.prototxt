@@ -3878,13 +3878,80 @@ layer {
   propagate_down: false
 }
 
+# glass
+layer {
+  name: "loss/classifier_glasses"
+  type: "InnerProduct"
+  bottom: "bottleneck"
+  top: "loss/classifier_glasses"
+  param {
+    name: "loss/classifier_glasses_w"
+    #lr_mult: 1
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    name: "loss/classifier_glasses_b"
+    #lr_mult: 2
+    lr_mult: 0
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+  propagate_down: false
+}
+
+# emotion
+layer {
+  name: "loss/classifier_emotion"
+  type: "InnerProduct"
+  bottom: "bottleneck"
+  top: "loss/classifier_emotion"
+  #top: "loss/lambda"
+  param {
+    name: "loss/classifier_emotion_w"
+    #lr_mult: 1
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    name: "loss/classifier_emotion_b"
+    #lr_mult: 2
+    lr_mult: 0
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 7
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+  propagate_down: false
+}
+
 layer {
   name: "concat_feature"
   type: "Concat"
   bottom: "loss/classifier_gender"
+  bottom: "loss/classifier_glasses"
+  bottom: "loss/classifier_emotion"
   bottom: "ip_last"
   bottom: "bottleneck"
   top: "feature"
+  propagate_down: false
+  propagate_down: false
   propagate_down: false
   propagate_down: false
   propagate_down: false
