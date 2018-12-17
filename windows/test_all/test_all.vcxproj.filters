@@ -227,6 +227,12 @@
     <ClCompile Include="..\..\src\caffe\test\test_rank_hard_loss_layer.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\caffe\test\test_cosin_add_m_layer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\caffe\test\test_label_specific_add.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\caffe\test\test_caffe_main.hpp">

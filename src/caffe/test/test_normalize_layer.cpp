@@ -53,7 +53,7 @@ namespace caffe {
                         normsqr_bottom += pow(this->blob_bottom_->data_at(i1, i2, i3, i4), 2);
                     }
                     EXPECT_NEAR(normsqr_top, 1, precision);
-                    Dtype c = pow(normsqr_bottom, -0.5) + 1e-6;
+                    Dtype c = 1. / (sqrt(normsqr_bottom) + 1e-6);
                     for (int i2 = 0; i2 < this->blob_top_->channels(); ++i2) {
                         EXPECT_NEAR(
                             this->blob_top_->data_at(i1, i2, i3, i4),
