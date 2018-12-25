@@ -17,69 +17,6 @@
 
 using namespace FaceDetection;
 
-//bool get_rect_face(const cv::Mat &image, const cv::Rect &face_rect, cv::Mat &face_image, const int crop_size = 128);
-const int g_normTemplateSize = 128;
-static float g_NormPoints[10] = {
-    33.5f, 32.0f,
-    93.5f, 32.0f,
-    63.5f, 63.5f,
-    45.5f, 95.0f,
-    81.5f, 95.0f,
-};
-
-//void readFileList(const char* basePath, vector<string>& imgFiles)
-//{
-//    DIR *dir;
-//    struct dirent *ptr;
-//    char base[1000];
-//
-//    if ((dir = opendir(basePath)) == NULL)
-//    {
-//        return;
-//    }
-//
-//    while ((ptr = readdir(dir)) != NULL)
-//    {
-//        if (strcmp(ptr->d_name, ".") == 0 ||
-//            strcmp(ptr->d_name, "..") == 0)
-//            continue;
-//        else if (ptr->d_type == 8)//file 
-//        {
-//            int len = strlen(ptr->d_name);
-//            // jpg, jpeg, png, bmp
-//            if ((ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'p' && ptr->d_name[len - 3] == 'j') || (ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'e' && ptr->d_name[len - 3] == 'p' && ptr->d_name[len - 4] == 'j') || (ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'n' && ptr->d_name[len - 3] == 'p') || (ptr->d_name[len - 1] == 'p' && ptr->d_name[len - 2] == 'm' && ptr->d_name[len - 3] == 'b'))
-//            {
-//                memset(base, '\0', sizeof(base));
-//                strcpy(base, basePath);
-//                strcat(base, "/");
-//                strcat(base, ptr->d_name);
-//                imgFiles.push_back(base);
-//            }
-//        }
-//        else if (ptr->d_type == 10)/// link file
-//        {
-//            int len = strlen(ptr->d_name);
-//            if ((ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'p' && ptr->d_name[len - 3] == 'j') || (ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'e' && ptr->d_name[len - 3] == 'p' && ptr->d_name[len - 4] == 'j') || (ptr->d_name[len - 1] == 'g' && ptr->d_name[len - 2] == 'n' && ptr->d_name[len - 3] == 'p') || (ptr->d_name[len - 1] == 'p' && ptr->d_name[len - 2] == 'm' && ptr->d_name[len - 3] == 'b'))
-//            {
-//                memset(base, '\0', sizeof(base));
-//                strcpy(base, basePath);
-//                strcat(base, "/");
-//                strcat(base, ptr->d_name);
-//                imgFiles.push_back(base);
-//            }
-//        }
-//        else if (ptr->d_type == 4)//dir
-//        {
-//            memset(base, '\0', sizeof(base));
-//            strcpy(base, basePath);
-//            strcat(base, "/");
-//            strcat(base, ptr->d_name);
-//            readFileList(base, imgFiles);
-//        }
-//    }
-//    closedir(dir);
-//}
-
 int LoadModel(const char* pModulePath, MTCNN &fd_mtcnn)
 {
     std::string strDllPath;
@@ -90,63 +27,6 @@ int LoadModel(const char* pModulePath, MTCNN &fd_mtcnn)
 
     return ret;
 }
-
-
-//bool get_rect_face(const cv::Mat &image, const cv::Rect &face_rect, cv::Mat &face_image, const int crop_size)
-//{
-//
-//    if ((image.empty()) || (face_rect.area() <= 0))
-//    {
-//        return false;
-//    }
-//    //get face image    
-//    cv::Rect face_rect_fixed = face_rect & cv::Rect(0, 0, image.cols, image.rows); //与操作，防止越界。
-//
-//    int rect_xy_diff, margin;
-//    rect_xy_diff = (face_rect_fixed.height - face_rect_fixed.width);
-//    margin = abs(rect_xy_diff);
-//
-//    if (rect_xy_diff > 0) {
-//        face_rect_fixed.y += margin / 2;
-//        face_rect_fixed.height -= margin;
-//    }
-//    else {
-//        face_rect_fixed.x += margin / 2;
-//        face_rect_fixed.width -= margin;
-//    }
-//    cv::Mat tmp_img;
-//    tmp_img = image(face_rect_fixed);
-//    cv::resize(tmp_img, face_image, cv::Size(crop_size, crop_size));
-//
-//    return true;
-//}
-
-//vector <string> findfile(string path)
-//{
-//    DIR *dp;
-//    struct dirent *dirp;
-//    vector<std::string> filename;
-//    if ((dp = opendir(path.c_str())) == NULL)
-//        perror("open dir error");
-//    while ((dirp = readdir(dp)) != NULL)
-//    {
-//        if (strcmp(dirp->d_name, ".") == 0 || strcmp(dirp->d_name, "..") == 0)    ///current dir OR parrent dir
-//            continue;
-//
-//        const char *p = strrchr(string(dirp->d_name).c_str(), '.');
-//        const char *q = p + 1;
-//        if (strcmp(q, "jpg") == 0 || strcmp(q, "png") == 0)
-//        {
-//            filename.push_back(path + '/' + string(dirp->d_name));
-//        }
-//
-//    }
-//
-//    for (int i = 0; i<filename.size(); i++)
-//        cout << i << ":" << filename[i] << endl;
-//    closedir(dp);
-//    return filename;
-//}
 
 int savelandmark2file(const char *inputfilename, char *outputfilename, MTCNN fd_mtcnn)
 {
@@ -196,14 +76,6 @@ int savelandmark2file(const char *inputfilename, char *outputfilename, MTCNN fd_
     fclose(pFile);
 
     return 0;
-
-    //cv::Mat alignedImg;
-    //bool bAlign = fd_mtcnn.alignFace(testImg, alignedImg, res[maxRect_id]);
-    //if(bAlign)
-    //    imwrite("align.jpg",alignedImg);
-
-    //cv::imshow("test", testImg);
-    //cv::waitKey();
 }
 
 int save_max_rect_face(string inputfilename, MTCNN fd_mtcnn, 
@@ -291,9 +163,11 @@ int main(int argc, char **argv) {
 #endif
 
 int main(int argc, char **argv) {
-    if (argc != 8) {
+    if (argc != 12) {
         std::cout << "usage:" << std::endl;
-        std::cout << "mtcnn_test <module_path> <base_dir> <file_list> <dst_image_dir> <gpuId>" << std::endl;
+        std::cout << "mtcnn_test <module_path> <base_dir> <file_list> <dst_image_dir> <gpuId>" 
+            << " <norm_width> <norm_height> <norm_scale> <norm_size> <norm_type> <norm_method>" 
+            << std::endl;
         return -1;
     }
     std::string modulePath = argv[1];
@@ -304,17 +178,57 @@ int main(int argc, char **argv) {
     std::string dst_image_dir = argv[4];
 
     int gpuId = atoi(argv[5]);
-    int norm_size = atoi(argv[6]);
-    float norm_scale = float(atof(argv[7]));
-
-    //int eyeCenterY, distEyeCMouthC, distEyeC;
-    //eyeCenterY = int(0.5 * ((g_NormPoints[1] + g_NormPoints[3]) * norm_scale + norm_size - g_normTemplateSize * norm_scale) + 0.5);
-    //distEyeCMouthC = int(0.5 * (g_NormPoints[7] + g_NormPoints[9] - g_NormPoints[1] - g_NormPoints[3]) * norm_scale + 0.5);
-    //distEyeC = int((g_NormPoints[2] - g_NormPoints[0]) * norm_scale + 0.5);
+    int norm_width = atoi(argv[6]);
+    int norm_height = atoi(argv[7]);
+    float norm_scale = float(atof(argv[8]));
+    int norm_size = atoi(argv[9]);
+    int norm_type = atoi(argv[10]);
+    int norm_method = atoi(argv[11]);
 
     hzx::CAffineNormImage affineNorm;
-    affineNorm.Initialize(norm_size, norm_size, norm_scale, 
-        g_normTemplateSize, g_NormPoints, 5, hzx::Bilinear);
+    hzx::CNormImage3pt normImage3pt;
+    hzx::CNormImageSimilarity similarityNorm;
+
+    hzx::InterpolateType type;
+    if (2 == norm_type)
+        type = hzx::InterpolateType::Area;
+    else if (1 == norm_type)
+        type = hzx::InterpolateType::Cubic;
+    else
+        type = hzx::InterpolateType::Bilinear;
+
+    int ret = 0;
+    if (2 == norm_method) {
+        if (112 == norm_size) {
+            ret = similarityNorm.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_112, 5, type);
+        }
+        else {
+            ret = similarityNorm.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_128, 5, type);
+        }
+        
+    } 
+    else if (1 == norm_method) {
+        if (112 == norm_size) {
+            ret = normImage3pt.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_112, 5, type);
+        }
+        else {
+            ret = normImage3pt.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_3pts_128, 5, type);
+        }
+    }
+    else {
+        if (112 == norm_size) {
+            ret = affineNorm.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_112, 5, type);
+        }
+        else {
+            ret = affineNorm.Initialize(norm_width, norm_height, norm_scale,
+                norm_size, hzx::g_NormPoints_128, 5, type);
+        }
+    }
 
     MTCNN::BoundingBox face_box;
 
@@ -351,10 +265,10 @@ int main(int argc, char **argv) {
             dst_image += "/";
             dst_image += name.substr(0, loc);
 #ifdef _WIN32
-            CreateDirectoryA(dst_image.c_str(), NULL);
+            if(0 != access(dst_image.c_str(), 0))
+                CreateDirectoryA(dst_image.c_str(), NULL);
 #else
-            int iStatus = access(dst_image.c_str(), F_OK);
-            if (iStatus != 0)
+            if (0 != access(dst_image.c_str(), F_OK))
                 mkdir(dst_image.c_str(), 0777);
 #endif
             name = name.substr(loc + 1);
@@ -362,6 +276,14 @@ int main(int argc, char **argv) {
         }
         dst_image += "/";
         dst_image += name;
+
+#ifdef _WIN32
+        if (0 == access(dst_image.c_str(), 0))
+            continue;
+#else
+        if (0 == access(dst_image.c_str(), F_OK))
+            continue;
+#endif
 
         string src_image = image_dir;
         src_image += "/";
@@ -388,17 +310,43 @@ int main(int argc, char **argv) {
             }
             }
             }*/
-            AutoArray<unsigned char> pNormImage5Pt(norm_size * norm_size * image.channels());
+            AutoArray<unsigned char> pNormImage5Pt(norm_width * norm_height * image.channels());
 
-            for (int j = 0; j < image.channels(); ++j) {
-                int retValue = affineNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
-                    image.cols, image.rows, feaPoints, 5,
-                    pNormImage5Pt + j * norm_size * norm_size);
-                if (retValue != 0)
-                    continue;
+            if (2 == norm_method) {
+                for (int j = 0; j < image.channels(); ++j) {
+                    int retValue = similarityNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
+                        image.cols, image.rows, feaPoints, 5,
+                        pNormImage5Pt + j * norm_width * norm_height);
+                    if (retValue != 0)
+                        continue;
 
-                mv[j] = cv::Mat(norm_size, norm_size, CV_8UC1, pNormImage5Pt + j * norm_size * norm_size);
+                    mv[j] = cv::Mat(norm_height, norm_width, CV_8UC1, pNormImage5Pt + j * norm_width * norm_height);
+                }
             }
+            else if (1 == norm_method) {
+                for (int j = 0; j < image.channels(); ++j) {
+                    int retValue = normImage3pt.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
+                        image.cols, image.rows, feaPoints, 5,
+                        pNormImage5Pt + j * norm_width * norm_height);
+                    if (retValue != 0)
+                        continue;
+
+                    mv[j] = cv::Mat(norm_height, norm_width, CV_8UC1, pNormImage5Pt + j * norm_width * norm_height);
+                }
+            }
+            else
+            {
+                for (int j = 0; j < image.channels(); ++j) {
+                    int retValue = affineNorm.NormImage(mv[j].data, //pImage.begin() + j * testImg.rows * testImg.cols,
+                        image.cols, image.rows, feaPoints, 5,
+                        pNormImage5Pt + j * norm_width * norm_height);
+                    if (retValue != 0)
+                        continue;
+
+                    mv[j] = cv::Mat(norm_height, norm_width, CV_8UC1, pNormImage5Pt + j * norm_width * norm_height);
+                }
+            }
+            
 
             cv::Mat face_img;
             cv::merge(mv, face_img);
