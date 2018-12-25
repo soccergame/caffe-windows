@@ -18,6 +18,8 @@
 #include "caffe/layers/memory_data_layer.hpp"
 #include "caffe/layers/python_layer.hpp"
 #include "caffe/sgd_solvers.hpp"
+#include "autoarray.h"
+#include "AlgorithmUtils.h"
 
 // Temporary solution for numpy < 1.7 versions: old macro, no promises.
 // You're strongly advised to upgrade to >= 1.7.
@@ -168,6 +170,74 @@ namespace caffe {
                                                static_cast<Phase>(phase)));
     net->CopyTrainedLayersFrom(pretrained_param_file);
     return net;
+  }
+
+  // Legacy Net construct-and-load convenience constructor
+  shared_ptr<Net<Dtype> > Net_Init_Load_Pbfile(
+      string pbfile, int phase) {
+      LOG(WARNING) << "DEPRECATION WARNING - deprecated use of Python interface";
+      LOG(WARNING) << "Use this instead (with the named \"weights\""
+          << " parameter):";
+      LOG(WARNING) << "Net('" << pbfile << "', " << phase << "')";
+      CheckFile(pbfile);
+
+      AutoArray<char> encryptedData;
+      int dataSize = 0;
+      std::fstream fp;
+      fp.open(pbfile, std::fstream::in | std::fstream::binary);
+      if (fp.is_open())
+      {
+          fp.seekg(0, std::fstream::end);
+          int dataLen = int(fp.tellg());
+          fp.seekg(0, std::fstream::beg);
+
+          dataSize = ((dataLen + 7) / 8) * 8;
+          encryptedData.resize(dataSize);
+          fp.read(encryptedData.begin(), dataSize);
+      }
+      fp.close();
+
+      CHECK_GE(dataSize, 0) << "Net('" << pbfile << "')'s content is null!";
+
+      int *pBuffer = reinterpret_cast<int *>(encryptedData.begin());
+      // encrypt data by shift left		
+      int numOfData = dataSize / sizeof(pBuffer[0]);
+      for (int i = 0; i < numOfData; ++i)
+      {
+          int tempData = pBuffer[i];
+          pBuffer[i] = hzx::ror(static_cast<unsigned int>(tempData),
+              hzx::g_shiftBits);
+      }
+
+      const int modelnumber = pBuffer[0];
+      std::vector<int> protoTxtLen, modelSize;
+      for (int i = 0; i < modelnumber; ++i)
+      {
+          protoTxtLen.push_back(pBuffer[2 * i + 1]);
+          modelSize.push_back(pBuffer[2 * i + 2]);
+      }
+      unsigned char *pDataBuf = reinterpret_cast<unsigned char *>(
+          encryptedData.begin()) + sizeof(int) * (2 * modelnumber + 1);
+
+      CHECK_EQ(modelnumber, 1) << "Python can only handle one model";
+      
+      caffe::NetParameter net_param;
+      caffe::NetParameter weight_param;
+
+      int retValue = caffe::ReatNetParamsFromBuffer(pDataBuf, protoTxtLen[0], &net_param);
+      CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
+      CHECK(caffe::UpgradeNetAsNeeded("<memory>", &net_param));
+      retValue = caffe::ReatNetParamsFromBuffer(pDataBuf + protoTxtLen[0], modelSize[0], &weight_param);
+      CHECK_EQ(retValue, 0) << "Read net structure from buffer error, code: " << retValue;
+      CHECK(caffe::UpgradeNetAsNeeded("<memory>", &weight_param));
+
+      net_param.mutable_state()->set_phase(static_cast<Phase>(phase));
+      shared_ptr<Net<Dtype> > net(new Net<Dtype>(net_param));
+
+      // initialize network parameters		
+      net->CopyTrainedLayersFrom(weight_param);
+
+      return net;
   }
 
   void Net_Save(const Net<Dtype>& net, string filename) {
@@ -432,6 +502,7 @@ namespace caffe {
                                                                           bp::arg("weights") = bp::object())))
       // Legacy constructor
       .def("__init__", bp::make_constructor(&Net_Init_Load))
+      .def("__init__", bp::make_constructor(&Net_Init_Load_Pbfile))
       .def("_forward", &Net<Dtype>::ForwardFromTo)
       .def("_backward", &Net<Dtype>::BackwardFromTo)
       .def("reshape", &Net<Dtype>::Reshape)
