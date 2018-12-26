@@ -236,7 +236,7 @@ int main(int argc, char** argv)
             1.0f,
         };
         hzx::CNormImageSimilarity affineNorm;
-        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints, Weights, 5);
+        affineNorm.Initialize(256, 256, 1.0, 300, NormPoints, 5);
         
         // Read Image
         //cv::Mat garyImgData = cv::imread(strImgName, CV_LOAD_IMAGE_GRAYSCALE);
