@@ -24,8 +24,8 @@ namespace FaceDetection{
         if (GpuId < 0)
             Caffe::set_mode(Caffe::CPU);
         else {
-            Caffe::set_mode(Caffe::GPU);
             Caffe::SetDevice(GpuId);
+            Caffe::set_mode(Caffe::GPU);
         }     
 #endif
     }

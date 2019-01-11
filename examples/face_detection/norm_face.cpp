@@ -1,6 +1,7 @@
 #include "caffe/face_detection/face_detection.hpp"
 #include "autoarray.h"
 #include "NormFaceImage.h"
+#include "TimeCount.h"
 #ifdef _WIN32
 #include <io.h>
 #else
@@ -79,15 +80,19 @@ int savelandmark2file(const char *inputfilename, char *outputfilename, MTCNN fd_
 }
 
 int save_max_rect_face(string inputfilename, MTCNN fd_mtcnn, 
-    MTCNN::BoundingBox &face_box)
+    MTCNN::BoundingBox &face_box, double &dTime)
 {
     cv::Mat testImg = cv::imread(inputfilename, CV_LOAD_IMAGE_COLOR);
     if (testImg.empty())
         return -1;
     //cout << "before detect" << endl;
     //double t = (double)cv::getTickCount();
+    CTimeCount timeCount;
     vector<MTCNN::BoundingBox> res;
+    timeCount.Start();
     res = fd_mtcnn.Detect(testImg, MTCNN::BGR, MTCNN::ORIENT_UP, 80, 0.6, 0.7, 0.7);
+    timeCount.Stop();
+    dTime = timeCount.GetTime();
     //t = ((double)cv::getTickCount()-t) / cv::getTickFrequency();
     //cout << "detected face NUM : " << res.size() << endl;
     //cout << "face detection:" << t*1000 << "ms" << endl;
@@ -184,6 +189,8 @@ int main(int argc, char **argv) {
     int norm_size = atoi(argv[9]);
     int norm_type = atoi(argv[10]);
     int norm_method = atoi(argv[11]);
+
+    double dTime = 0;
 
     hzx::CAffineNormImage affineNorm;
     hzx::CNormImage3pt normImage3pt;
@@ -288,7 +295,10 @@ int main(int argc, char **argv) {
         string src_image = image_dir;
         src_image += "/";
         src_image += imgList[l];
-        res = save_max_rect_face(src_image, fd_mtcnn, face_box);
+        
+        double time_count = 0;
+        res = save_max_rect_face(src_image, fd_mtcnn, face_box, time_count);
+        dTime += time_count;
         /*cout << "src_image: " << src_image << endl;
         cout << "dst_image: " << dst_image << endl;*/
         if (0 == res) {
@@ -353,8 +363,9 @@ int main(int argc, char **argv) {
 
             cv::imwrite(dst_image, face_img);
 
-            if (((l + 1) % 1000) == 0) {
-                std::cout << "Handled " << l + 1 << " images" << std::endl;
+            if (((l + 1) % 100) == 0) {
+                std::cout << "Handled " << l + 1 << " images, use " << dTime << " seconds" << std::endl;
+                dTime = 0;
             }
                 
         }
