@@ -100,7 +100,7 @@ int __stdcall SetFaceRecognitionLibPath(const char *szLibPath)
 #ifdef _WIN32
 	strcpy_s(g_szFaceRecognitionSDKPath, _MAX_PATH, szLibPath);
 #else
-    strncpy(g_szFaceBeautySDKPath, szLibPath, _MAX_PATH);
+    strncpy(g_szFaceRecognitionSDKPath, szLibPath, _MAX_PATH);
 #endif
 	
 	size_t len = strlen(g_szFaceRecognitionSDKPath);
@@ -131,8 +131,8 @@ int __stdcall InitFaceRecognition(const char *szResName, int gpuID,
 	int retValue = 0;
 
 #ifndef _WIN32	
-	if (strlen(g_szFaceBeautySDKPath) == 0)
-		strncpy(g_szFaceBeautySDKPath, "./", _MAX_PATH);
+	if (strlen(g_szFaceRecognitionSDKPath) == 0)
+		strncpy(g_szFaceRecognitionSDKPath, "./", _MAX_PATH);
 #endif
 
 	try
