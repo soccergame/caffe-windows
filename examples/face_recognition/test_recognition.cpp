@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
+        fp.close();
 
         std::ofstream outfile(argv[4]);
         outfile << "{";
@@ -76,8 +77,7 @@ int main(int argc, char **argv) {
             if (oriImgData.empty())
                 continue;
 
-            cv::Mat imgData;
-            cv::cvtColor(oriImgData(cv::Rect(56, 56, 112, 112)), imgData, cv::COLOR_BGR2RGB);
+            cv::Mat imgData = oriImgData(cv::Rect(56, 56, 112, 112)).clone();
             AutoArray<float> feature(feaDim);
             retValue = InnerFaceRecognition(hFace, imgData.data, 1, imgData.channels(), imgData.rows,
                 imgData.cols, feature.begin());
@@ -97,6 +97,9 @@ int main(int argc, char **argv) {
 
             flag = true;
         }
+
+        outfile << "}";
+        outfile.close();
 
         UninitFaceRecognition(hFace);
     }
