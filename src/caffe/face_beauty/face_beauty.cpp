@@ -43,8 +43,10 @@ int __stdcall InnerFaceBeauty(BeautyHandle handle, const unsigned char *pNormIma
     try
     {
         Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
+        Blob<float>* input_layer = pCaffeNet->input_blobs()[0];
+        float *normRealImage = input_layer->mutable_cpu_data();
         int length = batchSize * channels * imageHeight * imageWidth;
-        AutoArray<float> normRealImage(length);
+        //AutoArray<float> normRealImage(length);
         if (channels == 1)
         {
             const float Scale_Factor = 0.00390625f;
@@ -66,20 +68,20 @@ int __stdcall InnerFaceBeauty(BeautyHandle handle, const unsigned char *pNormIma
             }
         }
 
-        std::vector<caffe::Blob<float>*> bottom_vec;
+        /*std::vector<caffe::Blob<float>*> bottom_vec;
         bottom_vec.push_back(new caffe::Blob<float>);
         bottom_vec[0]->Reshape(batchSize, channels, imageHeight, imageWidth);
-        bottom_vec[0]->set_cpu_data(normRealImage);
+        bottom_vec[0]->set_cpu_data(normRealImage);*/
 
         float iter_loss;
-        const vector<Blob<float>*>& result = pCaffeNet->Forward(bottom_vec, &iter_loss);
+        const vector<Blob<float>*>& result = pCaffeNet->Forward(&iter_loss);
 
         for (int i = 0; i < result[0]->count(); ++i)
         {
             pFeatures[i] = result[0]->cpu_data()[i];
         }
 
-        delete bottom_vec[0];
+        //delete bottom_vec[0];
     }
     catch (const std::bad_alloc &)
     {

@@ -62,6 +62,40 @@ int __stdcall InnerFaceGender(BeautyHandle handle, const unsigned char *pNormIma
     try
     {
         Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
+        Blob<float>* input_layer = pCaffeNet->input_blobs()[0];
+        float *normRealImage = input_layer->mutable_cpu_data();
+        int length = batchSize * channels * imageHeight * imageWidth;
+
+        if (channels == 1)
+        {
+            const float Scale_Factor = 0.00390625f;
+            for (int i = 0; i < length; ++i)
+                normRealImage[i] = static_cast<float>(pNormImage[i]) * Scale_Factor;
+        }
+        else if (channels == 3)
+        {
+            for (int i = 0; i < batchSize; ++i)
+            {
+                for (int j = 0; j < channels; ++j)
+                {
+                    for (int k = 0; k < imageHeight * imageWidth; ++k)
+                    {
+                        int index = i * channels * imageHeight * imageWidth + j * imageHeight * imageWidth + k;
+                        normRealImage[index] = static_cast<float>(pNormImage[index]);
+                    }
+                }
+            }
+        }
+
+        float iter_loss;
+        const vector<Blob<float>*>& result = pCaffeNet->Forward(&iter_loss);
+
+        for (int i = 0; i < result[0]->count(); ++i)
+        {
+            pFeatures[i] = result[0]->cpu_data()[i];
+        }
+#if 0
+        Net<float> *pCaffeNet = reinterpret_cast<Net<float> *>(handle);
         int length = batchSize * channels * imageHeight * imageWidth;
         AutoArray<float> normRealImage(length);
         if (channels == 1)
@@ -99,6 +133,7 @@ int __stdcall InnerFaceGender(BeautyHandle handle, const unsigned char *pNormIma
         }
 
         delete bottom_vec[0];
+#endif
     }
     catch (const std::bad_alloc &)
     {
