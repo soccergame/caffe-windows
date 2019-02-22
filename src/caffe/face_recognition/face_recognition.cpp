@@ -74,6 +74,8 @@ int __stdcall InnerFaceRecognition(RecognitionHandle handle, const unsigned char
         {
             pFeatures[i] = result[0]->cpu_data()[i];
         }
+
+        delete bottom_vec[0];
     }
     catch (const std::bad_alloc &)
     {

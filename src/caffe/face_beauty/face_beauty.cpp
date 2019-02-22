@@ -78,6 +78,8 @@ int __stdcall InnerFaceBeauty(BeautyHandle handle, const unsigned char *pNormIma
         {
             pFeatures[i] = result[0]->cpu_data()[i];
         }
+
+        delete bottom_vec[0];
     }
     catch (const std::bad_alloc &)
     {
