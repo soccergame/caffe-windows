@@ -77,14 +77,20 @@ int main(int argc, char** argv) {
     const string encode_type = FLAGS_encode_type;
 
     std::ifstream infile(argv[2]);
-    std::vector<std::pair<std::string, int> > lines;
+    std::vector<std::pair<std::string, std::vector<int> > > lines;
+    std::string filename;
     std::string line;
     size_t pos;
     int label;
     while (std::getline(infile, line)) {
-        pos = line.find_last_of(' ');
-        label = atoi(line.substr(pos + 1).c_str());
-        lines.push_back(std::make_pair(line.substr(0, pos), label));
+        int label;
+        std::istringstream iss(line);
+        iss >> filename;
+        std::vector<int> labels;
+        while (iss >> label) {
+            labels.push_back(label);
+        }
+        lines.push_back(std::make_pair(filename, labels));
     }
     if (FLAGS_shuffle) {
         // randomly shuffle data
@@ -134,7 +140,9 @@ int main(int argc, char** argv) {
         //CropImage = cv_img(cv::Rect(54, 20, 96, 128)).clone();
         //cv::imwrite("D:/project/caffe-windows/Build/x64/test_crop2.jpg", CropImage);
         CVMatToDatum(CropImage, &datum);
-        datum.set_label(lines[line_id].second);
+        for (int i = 0; i < int(lines[line_id].second.size()); ++i)
+            datum.add_label(lines[line_id].second[i]);
+        /*datum.set_label();*/
 
         /*status = ReadImageToDatum(root_folder + lines[line_id].first,
             lines[line_id].second, resize_height, resize_width, is_color,
