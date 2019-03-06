@@ -75,13 +75,13 @@ int main(int argc, char** argv) {
     std::vector<std::pair<std::string, std::vector<int> > > lines;
     std::string filename;
     std::string line;
-    size_t pos;
-    int label;
+    //size_t pos;
     while (std::getline(infile, line)) {
         int label;
         std::istringstream iss(line);
         iss >> filename;
         std::vector<int> labels;
+        int label;
         while (iss >> label) {
             labels.push_back(label);
         }
